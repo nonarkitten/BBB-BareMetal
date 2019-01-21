@@ -121,16 +121,16 @@ void GPIO_initPort(GPIO_t port)
             return;        // GPIO0 doesnt have a clock module register, TRM 8.1.12.1
             break;
          case GPIO1:
-            CKM_setCLKModuleRegister(CKM_PER, CKM_PER_GPIO1_CLKCTRL, setting);
-            while((CKM_getCLKModuleRegister(CKM_PER, CKM_PER_GPIO1_CLKCTRL) & (0x3<<16)) != 0)
+            CKM_setCLKModuleRegister(CKM_PER_GPIO1_CLKCTRL, setting);
+            while((CKM_getCLKModuleRegister(CKM_PER_GPIO1_CLKCTRL) & (0x3<<16)) != 0)
             break;
          case GPIO2:
-            CKM_setCLKModuleRegister(CKM_PER, CKM_PER_GPIO2_CLKCTRL, setting);
-            while((CKM_getCLKModuleRegister(CKM_PER, CKM_PER_GPIO2_CLKCTRL) & (0x3<<16)) != 0)
+            CKM_setCLKModuleRegister(CKM_PER_GPIO2_CLKCTRL, setting);
+            while((CKM_getCLKModuleRegister(CKM_PER_GPIO2_CLKCTRL) & (0x3<<16)) != 0)
             break;
          case 3:
-            CKM_setCLKModuleRegister(CKM_PER, CKM_PER_GPIO3_CLKCTRL, setting);
-            while((CKM_getCLKModuleRegister(CKM_PER, CKM_PER_GPIO3_CLKCTRL) & (0x3<<16)) != 0)
+            CKM_setCLKModuleRegister(CKM_PER_GPIO3_CLKCTRL, setting);
+            while((CKM_getCLKModuleRegister(CKM_PER_GPIO3_CLKCTRL) & (0x3<<16)) != 0)
             break;
          default:
             // TODO: raise error (not possible, checked port before: /port)

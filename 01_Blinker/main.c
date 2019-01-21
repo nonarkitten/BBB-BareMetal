@@ -11,7 +11,7 @@ extern unsigned int GET32 (unsigned int address);
 #define CM_PER_BASE		0x44e00000
 #define CM_PER_GPIO1		0xAC
 
-#define TIME 500000
+#define TIME 50000000
 void _main (void)
 {
 	volatile unsigned int ra;
@@ -29,7 +29,6 @@ void _main (void)
    return;
 }
 
-/*
 /*
 The MIT License (MIT)
 
@@ -52,5 +51,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-*/
 */

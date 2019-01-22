@@ -22,7 +22,7 @@ $(BINARY): $(OBJ)/main.elf
 	$(CHAIN)-objcopy $< $@ -O binary
 
 $(OBJ)/main.elf: $(addprefix $(OBJ)/, $(OBJFILES))
-	$(CHAIN)-ld $? -T memmap.ld -o $@
+	$(CHAIN)-ld $^ -T memmap.ld -o $@
 
 $(OBJ)/%.o: %.s
 	$(CHAIN)-as -o $@ $<

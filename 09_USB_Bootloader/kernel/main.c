@@ -26,18 +26,18 @@
 #include "../sys/types.h"
 int main ()
 {
-   CPU_irqE();
-   USB_init();
+    CPU_irqE();
+    USB_init();
 
-   printf("USB DFU bootloader ready, send FW using \"dfu-util -D <file>\"\n");
+    printf("USB DFU bootloader ready, send FW using \"dfu-util -D <file>\"\n");
 
-   while(!DFU_update_ready){
-      asm volatile ("wfi \n");
-   }
+    while (!DFU_update_ready) {
+        asm volatile ("wfi \n");
+    }
 
-   printf("about to branchhhhh\n");
-   LED_setValue(0x0);
-   CPU_irqD();
-   BRANCHTO(0x80000000);
-   return 0;
+    printf("about to branchhhhh\n");
+    LED_setValue(0x0);
+    CPU_irqD();
+    BRANCHTO(0x80000000);
+    return 0;
 }

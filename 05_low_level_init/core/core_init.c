@@ -11,7 +11,7 @@
 
 void coreInit()
 {
-   CPU_irqD(); // disable interrupt
+    CPU_irqD(); // disable interrupt
 }
 
 

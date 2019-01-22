@@ -27,38 +27,37 @@
  **/
 void RTCINT_IRQHandler(void)
 {
-   static int i = 0;
-   LED_setValue(i++);
-   i &= 0xF;
-   PUT32(0x48200000+0xD4, 1<< 11);
-   UART_putString(UART0,"rtc irq\n",8);
+    static int i = 0;
+    LED_setValue(i++);
+    i &= 0xF;
+    PUT32(0x48200000 + 0xD4, 1 << 11);
+    UART_putString(UART0, "rtc irq\n", 8);
 }
 
 
 int main (void)
 {
-   LED_setValue(0x9);
-   CKM_setCLKModuleRegister(0x44E00800,0x4,0x2);   // software wakeup on RTC power domain
-   CKM_setCLKModuleRegister(0x44E00800,0x0,0x2);   // enable RTC clock power domain
+    LED_setValue(0x9);
+    CKM_setCLKModuleRegister(0x44E00800, 0x4, 0x2); // software wakeup on RTC power domain
+    CKM_setCLKModuleRegister(0x44E00800, 0x0, 0x2); // enable RTC clock power domain
 
-   PUT32(0x44E3E000+0x6C,0x83E70B13);     // disable protection on register
-   PUT32(0x44E3E000+0x70,0x95A4F1E0);     // disable protection on register
+    PUT32(0x44E3E000 + 0x6C, 0x83E70B13);  // disable protection on register
+    PUT32(0x44E3E000 + 0x70, 0x95A4F1E0);  // disable protection on register
 
-   PUT32(0x44E3E000+0x40,0x1);      // run RTC
+    PUT32(0x44E3E000 + 0x40, 0x1);   // run RTC
 
-   PUT32(0x44E3E000+0x54,1<<3 | 1<<6); // enable 32khz (bit 6) & select 32 khz osc
+    PUT32(0x44E3E000 + 0x54, 1 << 3 | 1 << 6); // enable 32khz (bit 6) & select 32 khz osc
 
-   while(GET32(0x44E3E000+0x44)&0x1);  // wait until RTC is done updating
+    while (GET32(0x44E3E000 + 0x44) & 0x1); // wait until RTC is done updating
 
-   PUT32(0x44E3E000+0x48,0x4);   // enable interrupt, every second
+    PUT32(0x44E3E000 + 0x48, 0x4); // enable interrupt, every second
 
-   PUT32(NVIC+0xC8,1<<11); // enable nvic rtc interrupt
+    PUT32(NVIC + 0xC8, 1 << 11); // enable nvic rtc interrupt
 
-   while(1)
-   {
-	  asm volatile ("wfi");    // wait for interrupt
-   }
-   return 0;
+    while (1) {
+        asm volatile ("wfi");    // wait for interrupt
+    }
+    return 0;
 }
 
 

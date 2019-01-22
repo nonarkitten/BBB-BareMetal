@@ -13,29 +13,26 @@
 #define CKM_PER_BASE    0x44E00000  // clock module power enable register base, TMR 2.1
 static bool CKM_checkValidModule(CKM_MODULE_REG module)
 {
-   if((module >CKM_PER_CLK_24MHZ_CLKSTCTRL))
-   {
-      // TODO: raise error (CKM_MODULE_REG too big: /module)
-      return false;
-   }
-   return true;
+    if ((module > CKM_PER_CLK_24MHZ_CLKSTCTRL)) {
+        // TODO: raise error (CKM_MODULE_REG too big: /module)
+        return false;
+    }
+    return true;
 }
 void CKM_setCLKModuleRegister(CKM_MODULE_REG module, unsigned int value)
 {
-   if(CKM_checkValidModule(module))
-   {
-      unsigned int addr_temp = CKM_PER_BASE + module;    // clock module base + module offset, TRM 2.1 & 8.1.12.1
-      PUT32(addr_temp, value);
-   }
+    if (CKM_checkValidModule(module)) {
+        unsigned int addr_temp = CKM_PER_BASE + module;    // clock module base + module offset, TRM 2.1 & 8.1.12.1
+        PUT32(addr_temp, value);
+    }
 }
 unsigned int CKM_getCLKModuleRegister(CKM_MODULE_REG module)
 {
-   if(CKM_checkValidModule(module))
-   {
-      unsigned int addr_temp = CKM_PER_BASE + module;    // clock module base + module offset, TRM 2.1 & 8.1.12.1
-      return GET32(addr_temp);
-   }
-   return 0;
+    if (CKM_checkValidModule(module)) {
+        unsigned int addr_temp = CKM_PER_BASE + module;    // clock module base + module offset, TRM 2.1 & 8.1.12.1
+        return GET32(addr_temp);
+    }
+    return 0;
 }
 
 

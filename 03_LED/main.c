@@ -13,16 +13,15 @@
  **/
 void _main (void)
 {
-	volatile unsigned int ra;
-   LED_init();
+    volatile unsigned int ra;
+    LED_init();
 
-   unsigned char c = 0;
-   for(;;)
-	{
-      LED_setValue(c++);
-		for(ra = 0; ra < TIME; ra ++);
-	}
-   return;
+    unsigned char c = 0;
+    for (;;) {
+        LED_setValue(c++);
+        for (ra = 0; ra < TIME; ra ++);
+    }
+    return;
 }
 
 

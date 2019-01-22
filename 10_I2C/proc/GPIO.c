@@ -82,168 +82,143 @@ static const CONTROL_MODULE GPIO_CTRL_MODULE_ARRAY[32][4] = {
 
 bool GPIO_checkValidPortPin(GPIO_t port, pin_t pin)
 {
-   if((port < GPIO0) || (port > GPIO3))
-   {
-      // TODO: raise error (port is either too big or negative: /port)
-      return false;
-   }
-   if((pin < 0) || (pin > 31))
-   {
-      // TODO: raise error (pin is either too big or negative: /pin)
-      return false;
-   }
-   if(GPIO_CTRL_MODULE_ARRAY[pin][port] == -1)
-   {
-      // TODO: raise error (pin/port combinaison isnt present on this chip: /port./pin)
-      return false;
-   }
-   return true;
+    if ((port < GPIO0) || (port > GPIO3)) {
+        // TODO: raise error (port is either too big or negative: /port)
+        return false;
+    }
+    if ((pin < 0) || (pin > 31)) {
+        // TODO: raise error (pin is either too big or negative: /pin)
+        return false;
+    }
+    if (GPIO_CTRL_MODULE_ARRAY[pin][port] == -1) {
+        // TODO: raise error (pin/port combinaison isnt present on this chip: /port./pin)
+        return false;
+    }
+    return true;
 }
 
 
 static bool GPIO_CheckValidDirection(pin_direction_t dir)
 {
-   if((dir!=INPUT) && (dir!=OUTPUT))
-   {
-      // TODO: raise error (direction not valid: /dir)
-      return false;
-   }
-   return true;
+    if ((dir != INPUT) && (dir != OUTPUT)) {
+        // TODO: raise error (direction not valid: /dir)
+        return false;
+    }
+    return true;
 }
 
 void GPIO_initPort(GPIO_t port)
 {
-   if(GPIO_checkValidPortPin(port,0))  // pin 0 always exist
-   {
-      uint32_t setting = (1<<18) | (0x2<<0);   //enable functional clock & enable module, TRM 8.1.12.1.32
-      switch(port)
-      {
-         case GPIO0:
+    if (GPIO_checkValidPortPin(port, 0)) { // pin 0 always exist
+        uint32_t setting = (1 << 18) | (0x2 << 0); //enable functional clock & enable module, TRM 8.1.12.1.32
+        switch (port) {
+        case GPIO0:
             return;        // GPIO0 doesnt have a clock module register, TRM 8.1.12.1
             break;
-         case GPIO1:
+        case GPIO1:
             CLKM_setCLKModuleRegister(CLKM_PER, CLKM_PER_GPIO1_CLKCTRL, setting);
-            while((CLKM_getCLKModuleRegister(CLKM_PER, CLKM_PER_GPIO1_CLKCTRL) & (0x3<<16)) != 0)
-            break;
-         case GPIO2:
+            while ((CLKM_getCLKModuleRegister(CLKM_PER, CLKM_PER_GPIO1_CLKCTRL) & (0x3 << 16)) != 0)
+                break;
+        case GPIO2:
             CLKM_setCLKModuleRegister(CLKM_PER, CLKM_PER_GPIO2_CLKCTRL, setting);
-            while((CLKM_getCLKModuleRegister(CLKM_PER, CLKM_PER_GPIO2_CLKCTRL) & (0x3<<16)) != 0)
-            break;
-         case 3:
+            while ((CLKM_getCLKModuleRegister(CLKM_PER, CLKM_PER_GPIO2_CLKCTRL) & (0x3 << 16)) != 0)
+                break;
+        case 3:
             CLKM_setCLKModuleRegister(CLKM_PER, CLKM_PER_GPIO3_CLKCTRL, setting);
-            while((CLKM_getCLKModuleRegister(CLKM_PER, CLKM_PER_GPIO3_CLKCTRL) & (0x3<<16)) != 0)
-            break;
-         default:
+            while ((CLKM_getCLKModuleRegister(CLKM_PER, CLKM_PER_GPIO3_CLKCTRL) & (0x3 << 16)) != 0)
+                break;
+        default:
             // TODO: raise error (not possible, checked port before: /port)
             break;
-      }
-   }
+        }
+    }
 }
 
 
 void GPIO_initPin(GPIO_t port, pin_t pin)
 {
-   if(GPIO_checkValidPortPin(port,pin))
-   {
-      CONTROL_MODULE module = GPIO_CTRL_MODULE_ARRAY[pin][port];  // get conf <module> <pin> for port/pin combination
-      PAD_setMode(module, MODE_7);  //set mode to GPIO, Datasheet 4.3.2
-      return;
-   }
+    if (GPIO_checkValidPortPin(port, pin)) {
+        CONTROL_MODULE module = GPIO_CTRL_MODULE_ARRAY[pin][port];  // get conf <module> <pin> for port/pin combination
+        PAD_setMode(module, MODE_7);  //set mode to GPIO, Datasheet 4.3.2
+        return;
+    }
 }
 void GPIO_setDirection(GPIO_t port, pin_t pin, pin_direction_t dir)
 {
-   if(GPIO_checkValidPortPin(port,pin))
-   {
-      if(GPIO_CheckValidDirection(dir))
-      {
-         uint32_t addr_temp = GPIO_BASE_ARRAY[port] + GPIO_OE;// GPIOx base + output enable offset, TRM 2.1 & 25.4.1.16
-         uint32_t val_temp = GET32(addr_temp);                   // not overwriting previous port setting
-         val_temp &= ~(1<<pin);
-         val_temp |= (dir<<pin);
-         PUT32(addr_temp,val_temp);    // writing new port setting
-      }
-   }
+    if (GPIO_checkValidPortPin(port, pin)) {
+        if (GPIO_CheckValidDirection(dir)) {
+            uint32_t addr_temp = GPIO_BASE_ARRAY[port] + GPIO_OE;// GPIOx base + output enable offset, TRM 2.1 & 25.4.1.16
+            uint32_t val_temp = GET32(addr_temp);                   // not overwriting previous port setting
+            val_temp &= ~(1 << pin);
+            val_temp |= (dir << pin);
+            PUT32(addr_temp, val_temp);   // writing new port setting
+        }
+    }
 }
 pin_direction_t GPIO_getDirection(GPIO_t port, pin_t pin)
 {
-   if(GPIO_checkValidPortPin(port,pin))
-   {
-      uint32_t addr_temp = GPIO_BASE_ARRAY[port] + GPIO_OE;      // GPIOx base + output enable offset, TRM 2.1 & 25.4.1.16
-      uint32_t val_temp = GET32(addr_temp);
-      if(val_temp & (1<<pin)) // masking for wanted pin
-      {
-         return INPUT;
-      }
-      else
-      {
-         return OUTPUT;
-      }
-   }
-   else
-   {
-      return -1;     // isn't a valid port/pin combination or doesnt exist
-   }
+    if (GPIO_checkValidPortPin(port, pin)) {
+        uint32_t addr_temp = GPIO_BASE_ARRAY[port] + GPIO_OE;      // GPIOx base + output enable offset, TRM 2.1 & 25.4.1.16
+        uint32_t val_temp = GET32(addr_temp);
+        if (val_temp & (1 << pin)) { // masking for wanted pin
+            return INPUT;
+        } else {
+            return OUTPUT;
+        }
+    } else {
+        return -1;     // isn't a valid port/pin combination or doesnt exist
+    }
 }
 
 void GPIO_setPin(GPIO_t port, pin_t pin)
 {
-   if(GPIO_checkValidPortPin(port,pin))
-   {
-      uint32_t addr_temp = GPIO_BASE_ARRAY[port] + GPIO_SETDATAOUT; // GPIOx base + set data out offset, TRM 2.1 & 25.4.1.26
-      uint32_t val_temp = 1<<pin;
-      PUT32(addr_temp, val_temp);
-   }
+    if (GPIO_checkValidPortPin(port, pin)) {
+        uint32_t addr_temp = GPIO_BASE_ARRAY[port] + GPIO_SETDATAOUT; // GPIOx base + set data out offset, TRM 2.1 & 25.4.1.26
+        uint32_t val_temp = 1 << pin;
+        PUT32(addr_temp, val_temp);
+    }
 }
 void GPIO_clrPin(GPIO_t port, pin_t pin)
 {
-   if(GPIO_checkValidPortPin(port,pin))
-   {
-      uint32_t addr_temp = GPIO_BASE_ARRAY[port]+GPIO_CLEARDATAOUT;  // GPIOx base+clear data out offset, TRM 2.1 & 25.4.1.25
-      uint32_t val_temp = 1<<pin;
-      PUT32(addr_temp, val_temp);
-   }
+    if (GPIO_checkValidPortPin(port, pin)) {
+        uint32_t addr_temp = GPIO_BASE_ARRAY[port] + GPIO_CLEARDATAOUT; // GPIOx base+clear data out offset, TRM 2.1 & 25.4.1.25
+        uint32_t val_temp = 1 << pin;
+        PUT32(addr_temp, val_temp);
+    }
 }
 
 level_t GPIO_getPin(GPIO_t port, pin_t pin)
 {
-   if(GPIO_checkValidPortPin(port,pin))
-   {
-      uint32_t addr_temp = GPIO_BASE_ARRAY[port] + GPIO_DATAIN; // GPIOx base + data in offset, TRM 2.1 & 25.4.1.17
-      uint32_t val_temp = GET32(addr_temp);
-      if(val_temp & (1<<pin))
-      {
-         return HIGH;
-      }
-      else
-      {
-         return LOW;
-      }
-   }
-   else
-   {
-      return -1;  // isnt a valid port/pin combination or doesnt exist
-   }
+    if (GPIO_checkValidPortPin(port, pin)) {
+        uint32_t addr_temp = GPIO_BASE_ARRAY[port] + GPIO_DATAIN; // GPIOx base + data in offset, TRM 2.1 & 25.4.1.17
+        uint32_t val_temp = GET32(addr_temp);
+        if (val_temp & (1 << pin)) {
+            return HIGH;
+        } else {
+            return LOW;
+        }
+    } else {
+        return -1;  // isnt a valid port/pin combination or doesnt exist
+    }
 }
 
 
 uint32_t GPIO_getPort(GPIO_t port)
 {
-   if(GPIO_checkValidPortPin(port,0)) // pin 0 always exist
-   {
-      uint32_t addr_temp = GPIO_BASE_ARRAY[port] + GPIO_DATAIN;  // GPIOx base + data in offset, TRM 2.1 & 25.4.1.17
-      return GET32(addr_temp);
-   }
-   return -1;
+    if (GPIO_checkValidPortPin(port, 0)) { // pin 0 always exist
+        uint32_t addr_temp = GPIO_BASE_ARRAY[port] + GPIO_DATAIN;  // GPIOx base + data in offset, TRM 2.1 & 25.4.1.17
+        return GET32(addr_temp);
+    }
+    return -1;
 }
 
 
 void GPIO_setPort(GPIO_t port, uint32_t value)
 {
-   if(GPIO_checkValidPortPin(port,0)) // pin 0 always exist
-   {
-      uint32_t addr_temp = GPIO_BASE_ARRAY[port] + GPIO_DATAOUT;  // GPIOx base + data in offset, TRM 2.1 & 25.4.1.18
-      PUT32(addr_temp, value);
-   }
+    if (GPIO_checkValidPortPin(port, 0)) { // pin 0 always exist
+        uint32_t addr_temp = GPIO_BASE_ARRAY[port] + GPIO_DATAOUT;  // GPIOx base + data in offset, TRM 2.1 & 25.4.1.18
+        PUT32(addr_temp, value);
+    }
 }
 
 

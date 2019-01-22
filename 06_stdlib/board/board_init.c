@@ -9,7 +9,7 @@
 
 void boardInit()
 {
-   LED_init();
+    LED_init();
 }
 
 /*

@@ -14,19 +14,18 @@ extern unsigned int GET32 (unsigned int address);
 #define TIME 50000000
 void _main (void)
 {
-	volatile unsigned int ra;
-		PUT32(CM_PER_BASE+CM_PER_GPIO1, 1<<18 | 2);
-		ra = GET32(GPIO1_BASE+GPIO_OE);
-		ra &= ~(15<<21);
-		PUT32(GPIO1_BASE+GPIO_OE,ra);
-	for(;;)
-	{
-		PUT32(GPIO1_BASE+GPIO_SETDATAOUT, (15<<21));
-		for(ra = 0; ra < TIME; ra ++);
-		PUT32(GPIO1_BASE+GPIO_CLRDATAOUT,15<<21);
-		for(ra = 0; ra < TIME; ra ++);
-	}
-   return;
+    volatile unsigned int ra;
+    PUT32(CM_PER_BASE + CM_PER_GPIO1, 1 << 18 | 2);
+    ra = GET32(GPIO1_BASE + GPIO_OE);
+    ra &= ~(15 << 21);
+    PUT32(GPIO1_BASE + GPIO_OE, ra);
+    for (;;) {
+        PUT32(GPIO1_BASE + GPIO_SETDATAOUT, (15 << 21));
+        for (ra = 0; ra < TIME; ra ++);
+        PUT32(GPIO1_BASE + GPIO_CLRDATAOUT, 15 << 21);
+        for (ra = 0; ra < TIME; ra ++);
+    }
+    return;
 }
 
 /*

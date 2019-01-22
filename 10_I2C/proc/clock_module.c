@@ -15,14 +15,14 @@
 
 void CLKM_setCLKModuleRegister(CLK_MODULE_t module, CLK_MODULE_REG reg, uint32_t value)
 {
-   uint32_t addr_temp = module + reg;    // clock module base + module offset, TRM 2.1 & 8.1.12.1
-   PUT32(addr_temp, value);
+    uint32_t addr_temp = module + reg;    // clock module base + module offset, TRM 2.1 & 8.1.12.1
+    PUT32(addr_temp, value);
 }
 uint32_t CLKM_getCLKModuleRegister(CLK_MODULE_t module, CLK_MODULE_REG reg)
 {
 
-   uint32_t addr_temp = module + reg;    // clock module base + module offset, TRM 2.1 & 8.1.12.1
-   return GET32(addr_temp);
+    uint32_t addr_temp = module + reg;    // clock module base + module offset, TRM 2.1 & 8.1.12.1
+    return GET32(addr_temp);
 
 }
 

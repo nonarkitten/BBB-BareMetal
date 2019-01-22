@@ -203,122 +203,117 @@ static const uint32_t UART_ARRAY_BASE[] = {0x44E09000, 0x48022000, 0x48024000, 0
 
 static bool UART_checkValidUart(UART_t uart)
 {
-   if((uart < UART0) || (uart > UART5))
-   {
-      // TODO: raise error (Uart number is either too big or negative: /uart)
-      return false;
-   }
-   return true;
+    if ((uart < UART0) || (uart > UART5)) {
+        // TODO: raise error (Uart number is either too big or negative: /uart)
+        return false;
+    }
+    return true;
 }
 void UART_initUART(UART_t uart, uint32_t baudrate, STOP_BIT_t stopBit, PARITY_BIT_t parity, FLOW_t flowControl)
 {
-   if(UART_checkValidUart(uart))
-   {
-      uint32_t uart_base = UART_ARRAY_BASE[uart];
-      switch(uart)
-      {
-         case UART0: // tx=1.11  rx=1.10  cts=1.8  rts=1.9
+    if (UART_checkValidUart(uart)) {
+        uint32_t uart_base = UART_ARRAY_BASE[uart];
+        switch (uart) {
+        case UART0: // tx=1.11  rx=1.10  cts=1.8  rts=1.9
 
             GPIO_initPort(GPIO1);
-            CM_setCtrlModule(CM_conf_uart0_txd,0); // do nothing on UART0_tx
-            CM_setCtrlModule(CM_conf_uart0_rxd,(1<<4)|(1<<5)); // set pullup/pulldown & receiver enabled on UART0_rx
-            PAD_setMode(CM_conf_uart0_txd,MODE_0); // set p1.11 as UART0_tx
-            PAD_setMode(CM_conf_uart0_rxd,MODE_0); // set p1.10 as UART0_rx
+            CM_setCtrlModule(CM_conf_uart0_txd, 0); // do nothing on UART0_tx
+            CM_setCtrlModule(CM_conf_uart0_rxd, (1 << 4) | (1 << 5)); // set pullup/pulldown & receiver enabled on UART0_rx
+            PAD_setMode(CM_conf_uart0_txd, MODE_0); // set p1.11 as UART0_tx
+            PAD_setMode(CM_conf_uart0_rxd, MODE_0); // set p1.10 as UART0_rx
 
 
-            REG32(CLKM_WKUP+CLKM_WKUP_CLKSTCTRL) &= ~(0b11);
-            REG32(CLKM_WKUP+CLKM_WKUP_CLKSTCTRL) |= 0b10;
+            REG32(CLKM_WKUP + CLKM_WKUP_CLKSTCTRL) &= ~(0b11);
+            REG32(CLKM_WKUP + CLKM_WKUP_CLKSTCTRL) |= 0b10;
 
             uint32_t temp;
 
-            REG32(CLKM_PER+CLKM_PER_L4HS_CLKSTCTRL) &= ~(0b11);
-            REG32(CLKM_PER+CLKM_PER_L4HS_CLKSTCTRL) |= 0b10;
+            REG32(CLKM_PER + CLKM_PER_L4HS_CLKSTCTRL) &= ~(0b11);
+            REG32(CLKM_PER + CLKM_PER_L4HS_CLKSTCTRL) |= 0b10;
 
-            REG32(CLKM_WKUP+CLKM_WKUP_UART0_CLKCTRL) &= ~(0b11);
-            REG32(CLKM_WKUP+CLKM_WKUP_UART0_CLKCTRL) |= 0b10;
+            REG32(CLKM_WKUP + CLKM_WKUP_UART0_CLKCTRL) &= ~(0b11);
+            REG32(CLKM_WKUP + CLKM_WKUP_UART0_CLKCTRL) |= 0b10;
 
-            while((REG32(CLKM_WKUP+CLKM_WKUP_UART0_CLKCTRL) & (0b11<<16)) != 0b00);
+            while ((REG32(CLKM_WKUP + CLKM_WKUP_UART0_CLKCTRL) & (0b11 << 16)) != 0b00);
 
             // TODO: verifiy it next block is needed for uart0
 
-            REG32(CLKM_PER+CLKM_PER_UART1_CLKCTRL) &= ~(0b11);
-            REG32(CLKM_PER+CLKM_PER_UART1_CLKCTRL) |= 0b10;
+            REG32(CLKM_PER + CLKM_PER_UART1_CLKCTRL) &= ~(0b11);
+            REG32(CLKM_PER + CLKM_PER_UART1_CLKCTRL) |= 0b10;
 
-            REG32(uart_base+0x54) |= (1<<1);
+            REG32(uart_base + 0x54) |= (1 << 1);
 
-            while((GET32(uart_base+0x58)&1)==0);   // wait for reset to be complete
+            while ((GET32(uart_base + 0x58) & 1) == 0); // wait for reset to be complete
 
-            temp = GET8(uart_base+0x54);
-            temp |= (0x1<<3); // no idle
-            PUT8(uart_base+0x54,temp);
+            temp = GET8(uart_base + 0x54);
+            temp |= (0x1 << 3); // no idle
+            PUT8(uart_base + 0x54, temp);
 
-            while(((GET32(uart_base+0x14)&0x40)!=0x40));    // wait for txfifo to be empty
+            while (((GET32(uart_base + 0x14) & 0x40) != 0x40)); // wait for txfifo to be empty
 
 
-            float div = 48000000.0/(16.0*(float)baudrate);
+            float div = 48000000.0 / (16.0 * (float)baudrate);
             uint32_t intdiv = (uint32_t) div;
-            PUT8(uart_base+0x04,0);
-            PUT8(uart_base+0x20,0x7);        // Disable modeselect (default) TRM table 19-50
-            PUT8(uart_base+0x0C,~(0x7C));    // divisor latch enable, access DLL DHL, set uart as 8bit
-            PUT8(uart_base+0x00,0);          // DLL = 0
-            PUT8(uart_base+0x04,0);          // DHL = 0
-            PUT8(uart_base+0x0C,0x3);        // set uart as 8bit
-            PUT8(uart_base+0x10,0x3);        // force /rts & /drt to active (low) (?!)
-            PUT8(uart_base+0x08,0x7);        // clear rx&tx FIFOs, and enables them (each 64 bytes deep)
-            PUT8(uart_base+0x0C,~(0x7C));    // divisor latch enable, access DLL DHL, set uart as 8bit
-            PUT8(uart_base+0x00,intdiv&0xFF);          // DLL = 0
-            PUT8(uart_base+0x04,(intdiv>>8)&0x3F);          // DHL = 0
+            PUT8(uart_base + 0x04, 0);
+            PUT8(uart_base + 0x20, 0x7);     // Disable modeselect (default) TRM table 19-50
+            PUT8(uart_base + 0x0C, ~(0x7C)); // divisor latch enable, access DLL DHL, set uart as 8bit
+            PUT8(uart_base + 0x00, 0);       // DLL = 0
+            PUT8(uart_base + 0x04, 0);       // DHL = 0
+            PUT8(uart_base + 0x0C, 0x3);     // set uart as 8bit
+            PUT8(uart_base + 0x10, 0x3);     // force /rts & /drt to active (low) (?!)
+            PUT8(uart_base + 0x08, 0x7);     // clear rx&tx FIFOs, and enables them (each 64 bytes deep)
+            PUT8(uart_base + 0x0C, ~(0x7C)); // divisor latch enable, access DLL DHL, set uart as 8bit
+            PUT8(uart_base + 0x00, intdiv & 0xFF);     // DLL = 0
+            PUT8(uart_base + 0x04, (intdiv >> 8) & 0x3F);   // DHL = 0
 
-            PUT8(uart_base+0x0C,0x3);        // set uart as 8 bit
-            PUT8(uart_base+0x20,0);          // uart 16x oversampling
+            PUT8(uart_base + 0x0C, 0x3);     // set uart as 8 bit
+            PUT8(uart_base + 0x20, 0);       // uart 16x oversampling
 
             break;
-         case UART1:
+        case UART1:
             // TODO: implement UART1-5
             break;
-         case UART2:
+        case UART2:
             break;
-         case UART3:
+        case UART3:
             break;
-         case UART4:
+        case UART4:
             break;
-         case UART5:
+        case UART5:
             break;
-      }
-   }
+        }
+    }
 }
 
 void UART_putC(UART_t uart, char c)
 {
-   uint32_t uart_base = UART_ARRAY_BASE[uart];
-   while((GET8(uart_base+0x14)&0x20)!=0x20);   //wait until txfifo is empty
+    uint32_t uart_base = UART_ARRAY_BASE[uart];
+    while ((GET8(uart_base + 0x14) & 0x20) != 0x20); //wait until txfifo is empty
 
-   PUT8(uart_base +0,c);
+    PUT8(uart_base + 0, c);
 }
 
 char UART_getC(UART_t uart)
 {
-   uint32_t uart_base = UART_ARRAY_BASE[uart];
-   while((GET8(uart_base+0x14)&0x1)==0);     //wait for a character to be in the rx fifo
-   return GET8(uart_base+0x0);
+    uint32_t uart_base = UART_ARRAY_BASE[uart];
+    while ((GET8(uart_base + 0x14) & 0x1) == 0); //wait for a character to be in the rx fifo
+    return GET8(uart_base + 0x0);
 }
 
 int UART_putString(UART_t uart, const char *str, uint32_t length)
 {
-   for(int i = 0; i < length; i++)
-   {
-      UART_putC(uart,str[i]);
-   }
-   return length;
+    for (int i = 0; i < length; i++) {
+        UART_putC(uart, str[i]);
+    }
+    return length;
 }
 
 int UART_getString(UART_t uart, char *buf, uint32_t length)
 {
-   for(int i = 0; i < length; i ++)
-   {
-      buf[i] = UART_getC(uart);
-   }
-   return length;
+    for (int i = 0; i < length; i ++) {
+        buf[i] = UART_getC(uart);
+    }
+    return length;
 }
 
 

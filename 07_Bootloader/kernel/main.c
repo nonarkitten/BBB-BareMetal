@@ -39,32 +39,30 @@ unsigned int c ;
 int main (void)
 {
 
-   unsigned int length = 0;
-   unsigned long long int sumcheck = 0;
-   unsigned long long int sum = 0;
-   char *mem = (char*)BASE_ADRESS;
+    unsigned int length = 0;
+    unsigned long long int sumcheck = 0;
+    unsigned long long int sum = 0;
+    char *mem = (char*)BASE_ADRESS;
 
-   printf(" (c) Alexis Marquet\n");
-   printf("Bootloader ready, code destination = 0x%X\n",(unsigned int)mem);
-   printf("Asking for boot file....... \005 \n");
+    printf(" (c) Alexis Marquet\n");
+    printf("Bootloader ready, code destination = 0x%X\n", (unsigned int)mem);
+    printf("Asking for boot file....... \005 \n");
 
 
-   int l = read(0,&length,sizeof(length));
-   int m = read(0,mem,length);
-   int s = read(0,&sum,sizeof(sum));
+    int l = read(0, &length, sizeof(length));
+    int m = read(0, mem, length);
+    int s = read(0, &sum, sizeof(sum));
 
-   for(uint32_t i = 0; i < length; i++)
-   {
-      sumcheck += mem[i];
-   }
-   if(sum!=sumcheck)
-   {
-      fprintf(stderr,"Error when checking SUM, %llx != %llx\n",sum, sumcheck);
-      while(1);
-   }
-   printf("about to branch...\n");
-   BRANCHTO(BASE_ADRESS);
-   return 0;
+    for (uint32_t i = 0; i < length; i++) {
+        sumcheck += mem[i];
+    }
+    if (sum != sumcheck) {
+        fprintf(stderr, "Error when checking SUM, %llx != %llx\n", sum, sumcheck);
+        while (1);
+    }
+    printf("about to branch...\n");
+    BRANCHTO(BASE_ADRESS);
+    return 0;
 }
 
 

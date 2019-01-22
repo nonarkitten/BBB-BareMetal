@@ -14,15 +14,14 @@
  **/
 void _main (void)
 {
-   LED_init();
+    LED_init();
 
-   UART_initUART(UART0,115200,STOP1,PARITY_NONE,FLOW_OFF);
-   UART_putString(UART0,"UART0 Initialized...\n",21);
-   while(1)
-   {
-      UART_putC(UART0,UART_getC(UART0));
-   }
-   return;
+    UART_initUART(UART0, 115200, STOP1, PARITY_NONE, FLOW_OFF);
+    UART_putString(UART0, "UART0 Initialized...\n", 21);
+    while (1) {
+        UART_putC(UART0, UART_getC(UART0));
+    }
+    return;
 }
 
 

@@ -13,12 +13,12 @@
 
 void CM_setCtrlModule(CONTROL_MODULE module, unsigned int value)
 {
-   PUT32(CM_MODULE_REGISTER_BASE + module, value);
+    PUT32(CM_MODULE_REGISTER_BASE + module, value);
 }
 
 unsigned int CM_getCtrlModule(CONTROL_MODULE module)
 {
-   return GET32(CM_MODULE_REGISTER_BASE + module);
+    return GET32(CM_MODULE_REGISTER_BASE + module);
 }
 
 

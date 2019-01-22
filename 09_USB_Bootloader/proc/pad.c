@@ -11,32 +11,26 @@
 
 void PAD_setMode(CONTROL_MODULE module, pinmode_t mode)
 {
-   if((module <= CM_conf_usb1_drvvbus ) && (module >= CM_conf_gpmc_ad0))
-   {
-      unsigned int temp = CM_getCtrlModule(module);
-      temp &= ~(0b111);    // turn down MUXMODE
-      temp |= mode;        // set new MUXMODE
-      CM_setCtrlModule(module, temp);
-   }
-   else
-   {
-      // TODO: raise error (control module isnt a "conf <module> <pin>" register)
-      return;
-   }
+    if ((module <= CM_conf_usb1_drvvbus ) && (module >= CM_conf_gpmc_ad0)) {
+        unsigned int temp = CM_getCtrlModule(module);
+        temp &= ~(0b111);    // turn down MUXMODE
+        temp |= mode;        // set new MUXMODE
+        CM_setCtrlModule(module, temp);
+    } else {
+        // TODO: raise error (control module isnt a "conf <module> <pin>" register)
+        return;
+    }
 }
 pinmode_t PAD_getMode(CONTROL_MODULE module)
 {
-   if((module <= CM_conf_usb1_drvvbus ) && (module >= CM_conf_gpmc_ad0))
-   {
-      unsigned int temp = CM_getCtrlModule(module);
-      temp &= ~(0b111);
-      return (pinmode_t) temp;
-   }
-   else
-   {
-      // TODO: raise error (control module isnt a "conf <module> <pin>" register)
-      return -1;
-   }
+    if ((module <= CM_conf_usb1_drvvbus ) && (module >= CM_conf_gpmc_ad0)) {
+        unsigned int temp = CM_getCtrlModule(module);
+        temp &= ~(0b111);
+        return (pinmode_t) temp;
+    } else {
+        // TODO: raise error (control module isnt a "conf <module> <pin>" register)
+        return -1;
+    }
 }
 
 

@@ -218,43 +218,43 @@ void UART_initUART(UART_t uart, uint32_t baudrate, STOP_BIT_t stopBit, PARITY_BI
       switch(uart)
       {
          case UART0: // tx=1.11  rx=1.10  cts=1.8  rts=1.9
-            
+
             GPIO_initPort(GPIO1);
             CM_setCtrlModule(CM_conf_uart0_txd,0); // do nothing on UART0_tx
             CM_setCtrlModule(CM_conf_uart0_rxd,(1<<4)|(1<<5)); // set pullup/pulldown & receiver enabled on UART0_rx
             PAD_setMode(CM_conf_uart0_txd,MODE_0); // set p1.11 as UART0_tx
             PAD_setMode(CM_conf_uart0_rxd,MODE_0); // set p1.10 as UART0_rx
-            
-            
+
+
             REG32(CLKM_WKUP+CLKM_WKUP_CLKSTCTRL) &= ~(0b11);
             REG32(CLKM_WKUP+CLKM_WKUP_CLKSTCTRL) |= 0b10;
 
             uint32_t temp;
-            
+
             REG32(CLKM_PER+CLKM_PER_L4HS_CLKSTCTRL) &= ~(0b11);
             REG32(CLKM_PER+CLKM_PER_L4HS_CLKSTCTRL) |= 0b10;
 
             REG32(CLKM_WKUP+CLKM_WKUP_UART0_CLKCTRL) &= ~(0b11);
             REG32(CLKM_WKUP+CLKM_WKUP_UART0_CLKCTRL) |= 0b10;
-            
+
             while((REG32(CLKM_WKUP+CLKM_WKUP_UART0_CLKCTRL) & (0b11<<16)) != 0b00);
-            
+
             // TODO: verifiy it next block is needed for uart0
-            
+
             REG32(CLKM_PER+CLKM_PER_UART1_CLKCTRL) &= ~(0b11);
             REG32(CLKM_PER+CLKM_PER_UART1_CLKCTRL) |= 0b10;
-            
+
             REG32(uart_base+0x54) |= (1<<1);
-            
+
             while((GET32(uart_base+0x58)&1)==0);   // wait for reset to be complete
-            
+
             temp = GET8(uart_base+0x54);
             temp |= (0x1<<3); // no idle
             PUT8(uart_base+0x54,temp);
-            
+
             while(((GET32(uart_base+0x14)&0x40)!=0x40));    // wait for txfifo to be empty
-            
-            
+
+
             float div = 48000000.0/(16.0*(float)baudrate);
             uint32_t intdiv = (uint32_t) div;
             PUT8(uart_base+0x04,0);
@@ -271,7 +271,7 @@ void UART_initUART(UART_t uart, uint32_t baudrate, STOP_BIT_t stopBit, PARITY_BI
 
             PUT8(uart_base+0x0C,0x3);        // set uart as 8 bit
             PUT8(uart_base+0x20,0);          // uart 16x oversampling
-            
+
             break;
          case UART1:
             // TODO: implement UART1-5
@@ -292,7 +292,7 @@ void UART_putC(UART_t uart, char c)
 {
    uint32_t uart_base = UART_ARRAY_BASE[uart];
    while((GET8(uart_base+0x14)&0x20)!=0x20);   //wait until txfifo is empty
-    
+
    PUT8(uart_base +0,c);
 }
 
@@ -325,19 +325,19 @@ int UART_getString(UART_t uart, char *buf, uint32_t length)
 
 /*
  The MIT License (MIT)
- 
+
  Copyright (c) 2015 Alexis Marquet
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

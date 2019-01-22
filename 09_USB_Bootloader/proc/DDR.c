@@ -1,6 +1,6 @@
 //
 //  DDR.c
-//  
+//
 //
 //  taken from https://github.com/auselen/down-to-the-bone example runtime (DDR init)
 //
@@ -33,8 +33,8 @@ void enable_emif_clocks_x(void)
    //        writel(PRCM_MOD_EN, &cmper->emifclkctrl);
    /* Poll if module is functional */
    //        while ((readl(&cmper->emifclkctrl)) != PRCM_MOD_EN)
-   
-   
+
+
    /* Enable the  EMIF_FW Functional clock */
    writel(0x00000002, 0x44E000D0); // ref 8.1.12.1.38, EMIF firewall clocks, module fully functional, and enabled
    /* Enable EMIF0 Clock */
@@ -48,65 +48,65 @@ void enable_emif_clocks_x(void)
 void ddr_pll_config_x(void)
 {
    u32 clkmode, clksel, div_m2;
-   
+
    //        clkmode = readl(&cmwkup->clkmoddpllddr);
    //        clksel = readl(&cmwkup->clkseldpllddr);
    //        div_m2 = readl(&cmwkup->divm2dpllddr);
-   
+
    /* Set the PLL to bypass Mode */
    //        clkmode = (clkmode & CLK_MODE_MASK) | PLL_BYPASS_MODE;
    //        writel(clkmode, &cmwkup->clkmoddpllddr);
-   
+
    /* Wait till bypass mode is enabled */
    //        while ((readl(&cmwkup->idlestdpllddr) & ST_MN_BYPASS)
    //                                != ST_MN_BYPASS)
    //                ;
-   
+
    //        clksel = clksel & (~CLK_SEL_MASK);
    //        clksel = clksel | ((ddrpll_m << CLK_SEL_SHIFT) | DDRPLL_N);
    //        writel(clksel, &cmwkup->clkseldpllddr);
-   
+
    //        div_m2 = div_m2 & CLK_DIV_SEL;
    //        div_m2 = div_m2 | DDRPLL_M2;
    //        writel(div_m2, &cmwkup->divm2dpllddr);
-   
+
    //        clkmode = (clkmode & CLK_MODE_MASK) | CLK_MODE_SEL;
    //        writel(clkmode, &cmwkup->clkmoddpllddr);
-   
+
    /* Wait till dpll is locked */
    //        while ((readl(&cmwkup->idlestdpllddr) & ST_DPLL_CLK) != ST_DPLL_CLK)
    //                ;
-   
+
    DBG(100);
    clkmode = readl(0x44E00494);
    clksel = readl(0x44E00440);
    div_m2 = readl(0x44E004A0);
-   
+
    /* Set the PLL to bypass Mode */
    clkmode = (clkmode & 0xfffffff8) | 0x00000004;
    writel(clkmode, 0x44E00494);
    DBG(101);
-   
+
    /* Wait till bypass mode is enabled */
    while ((readl(0x44E00434) & 0x00000100)
           != 0x00000100)
       ;
    DBG(102);
-   
+
    clksel = clksel & (~0x7ffff);
    clksel = clksel | ((400 << 0x8) | ((24000000/1000000)-1) );
    writel(clksel, 0x44E00440);
    DBG(103);
-   
+
    div_m2 = div_m2 & 0xFFFFFFE0;
    div_m2 = div_m2 | 1;
    writel(div_m2, 0x44E004A0);
    DBG(104);
-   
+
    clkmode = (clkmode & 0xfffffff8) | 0x00000007;
    writel(clkmode, 0x44E00494);
    DBG(105);
-   
+
    /* Wait till dpll is locked */
    while ((readl(0x44E00434) & 0x00000001) != 0x00000001)
       ;
@@ -133,15 +133,15 @@ void config_cmd_ctrl_x(void)
    writel(0x00000080, 0x44E1201C); // ref 7.3.6.1 (CMD0), CMD slave ratio (adr/cmd launch timing), set to max acc to ref
    writel(0x00000001, 0x44E12028); // ref 7.3.6.2 (CMD0), Dll lock diff (jitter def), set to 1 wher 4 is max
    writel(0x00000000, 0x44E1202C); // ref 7.3.6.3 (CMD0), DRMA polarity inverter (clk inverted rel to core clk), set to 0 == not inverted
-   
+
    writel(0x00000080, 0x44E12050); // see above, this is CMD1
    writel(0x00000001, 0x44E1205C); // see above, this is CMD1
    writel(0x00000000, 0x44E12060); // see above, this is CMD1
-   
+
    writel(0x00000080, 0x44E12084); // see above, this is CMD2
    writel(0x00000001, 0x44E12090); // see above, this is CMD2
    writel(0x00000000, 0x44E12094); // see above, this is CMD2
-   
+
 }
 
 /**
@@ -209,13 +209,13 @@ void config_io_ctrl_x(void)
    // 	bits 7-5 clk I/O pads output impedance, set to 4
    // 	bits 4-3 adr/cmd pads output slew rate, set to 1
    // 	bits 2-0 adr/cmd pads output impedance, set to 3
-   
+
    writel(0x0000018B, 0x44E1140C);
    // ref 9.3.90, ddr_cmd2_ioctrl
    // 	see ref 9.3.89, ddr_cmd1_ioctrl
-   
+
    writel(0x0000018B, 0x44E11410); // ???, not in ref?
-   
+
    writel(0x0000018B, 0x44E11444);
    // ref 9.3.91, ddr_data1_ioctrl
    //	bit 29 and bit 19, PU/PD for DQS and its inverse, no pull
@@ -225,7 +225,7 @@ void config_io_ctrl_x(void)
    // 	bits 7-5 clk I/O pads output impedance, set to 4
    // 	bits 4-3 adr/cmd pads output slew rate, set to 1
    // 	bits 2-0 adr/cmd pads output impedance, set to 3
-   
+
    writel(0x0000018B, 0x44E11448); // ???, not in ref?
 }
 
@@ -378,12 +378,12 @@ static void config_vtp_x(void)
    //                        &vtpreg->vtp0ctrlreg);
    //        writel(readl(&vtpreg->vtp0ctrlreg) | VTP_CTRL_START_EN,
    //                        &vtpreg->vtp0ctrlreg);
-   
+
    /* Poll for READY */
    //        while ((readl(0x44E10E0C) & VTP_CTRL_READY) !=
    //                        VTP_CTRL_READY)
    //                ;
-   
+
    DBG(200);
    writel(readl(0x44E10E0C) | (0x1 << 6),
           0x44E10E0C);
@@ -394,7 +394,7 @@ static void config_vtp_x(void)
    writel(readl(0x44E10E0C) | 0x1,
           0x44E10E0C);
    DBG(203);
-   
+
    /* Poll for READY */
    while ((readl(0x44E10E0C) & (0x1 << 5)) !=
           (0x1 << 5))
@@ -420,20 +420,20 @@ void config_ddr_x(void)
    DBG(4);
    config_cmd_ctrl_x();
    DBG(5);
-   
+
    config_ddr_data_x_0();
    DBG(6);
    config_ddr_data_x_1();
    DBG(7);
-   
+
    config_io_ctrl_x();
    DBG(8);
-   
+
    /* Set CKE to be controlled by EMIF/DDR PHY */
    //        writel(DDR_CKE_CTRL_NORMAL, &ddrctrl->ddrckectrl);
    writel(0x1,0x44E1131C);
    DBG(9);
-   
+
    /* Program EMIF instance */
    config_ddr_phy_x();
    DBG(10);

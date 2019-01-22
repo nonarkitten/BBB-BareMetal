@@ -47,53 +47,53 @@ enum USBSS_
    IRQSTAT           =  0x28,
    IRQENABLER        =  0x2C,
    IRQCLEARR         =  0x30,
-   
+
    IRQDMATHOLDTX00   =  0x100,
    IRQDMATHOLDTX01   =  0x104,
    IRQDMATHOLDTX02   =  0x108,
    IRQDMATHOLDTX03   =  0x10C,
-   
+
    IRQDMATHOLDRX00   =  0x110,
    IRQDMATHOLDRX01   =  0x114,
    IRQDMATHOLDRX02   =  0x118,
    IRQDMATHOLDRX03   =  0x11C,
-   
+
    IRQDMATHOLDTX10   =  0x120,
    IRQDMATHOLDTX11   =  0x124,
    IRQDMATHOLDTX12   =  0x128,
    IRQDMATHOLDTX13   =  0x12C,
-   
+
    IRQDMATHOLDRX10   =  0x130,
    IRQDMATHOLDRX11   =  0x134,
    IRQDMATHOLDRX12   =  0x138,
    IRQDMATHOLDRX13   =  0x13C,
-   
+
    IRQDMAENABLE0     =  0x140,
    IRQDMAENABLE1     =  0x144,
-   
+
    IRQFRAMETHOLDTX00 =  0x200,
    IRQFRAMETHOLDTX01 =  0x204,
    IRQFRAMETHOLDTX02 =  0x208,
    IRQFRAMETHOLDTX03 =  0x20C,
-   
+
    IRQFRAMETHOLDRX00 =  0x210,
    IRQFRAMETHOLDRX01 =  0x214,
    IRQFRAMETHOLDRX02 =  0x218,
    IRQFRAMETHOLDRX03 =  0x21C,
-   
+
    IRQFRAMETHOLDTX10 =  0x220,
    IRQFRAMETHOLDTX11 =  0x224,
    IRQFRAMETHOLDTX12 =  0x228,
    IRQFRAMETHOLDTX13 =  0x22C,
-   
+
    IRQFRAMETHOLDRX10 =  0x230,
    IRQFRAMETHOLDRX11 =  0x234,
    IRQFRAMETHOLDRX12 =  0x238,
    IRQFRAMETHOLDRX13 =  0x23C,
-   
+
    IRQFRAMEENABLE0   =  0x240,
    IRQFRAMEENABLE1   =  0x244,
-   
+
 };
 
 
@@ -104,22 +104,22 @@ enum USBx_CRTL
    USBxCTRL          =  0x14,
    USBxSTAT          =  0x18,
    USBxIRQMSTAT      =  0x20,
-   
+
    USBxIRQSTATRAW0   =  0x28,
    USBxIRQSTATRAW1   =  0x2C,
-   
+
    USBxIRQSTAT0      =  0x30,
    USBxIRQSTAT1      =  0x34,
-   
+
    USBxIRQENABLESET0 =  0x38,
    USBxIRQENABLESET1 =  0x3C,
-   
+
    USBxIRQENABLECLR0 =  0x40,
    USBxIRQENABLECLR1 =  0x44,
-   
+
    USBxTXMODE        =  0x70,
    USBxRXMODE        =  0x74,
-   
+
    USBxGENRNDISEP1   =  0x80,
    USBxGENRNDISEP2   =  0x84,
    USBxGENRNDISEP3   =  0x88,
@@ -135,11 +135,11 @@ enum USBx_CRTL
    USBxGENRNDISEP13  =  0xB0,
    USBxGENRNDISEP14  =  0xB4,
    USBxGENRNDISEP15  =  0xB8,
-   
+
    USBxAUTOREQ       =  0xD0,
    USBxSRPFIXTIME    =  0xD4,
    USBxTDOWN         =  0xD8,
-   
+
    USBxUTMI          =  0xE0,
    USBxMGCUTMILB     =  0xE4,
    USBxMODE          =  0xE8
@@ -152,7 +152,7 @@ enum USBx_PHY
    RX_CALIB                =  0x04,
    DLLHS_2                 =  0x08,
    RX_TEST_2               =  0x0C,
-   
+
    CHRG_DET                =  0x14,
    PWR_CNTL                =  0x18,
    UTMI_INTERFACE_CNTL_1   =  0x1C,
@@ -162,12 +162,12 @@ enum USBx_PHY
    CDR_BIST2               =  0x2C,
    GPIO                    =  0x30,
    DLLHS                   =  0x34,
-   
+
    USB2PHYCM_CONFIG        =  0x3C,
    AD_INTERFACE_REG1       =  0x44,
    AD_INTERFACE_REG2       =  0x48,
    AD_INTERFACE_REG3       =  0x4C,
-   
+
    ANA_CONFIG2             =  0x54
 };
 // USB core register, according to
@@ -457,7 +457,7 @@ void USBINT0_IRQHandler()
    uint16_t intrtx = GET16(USB0_CORE+INTRTX);
    uint16_t intrrx = GET16(USB0_CORE+INTRRX);
    NVIC_ClearPending(USBINT0_IRQn);
-   
+
    if(intrusb & 0b10)	// resume interrupt
    {
       // resume routine
@@ -534,7 +534,7 @@ void USB_print_setup(struct USBSetupPacket s)
    {
       USB_DBG("host->dev, ");
    }
-   
+
    switch(s.bmRequestType & 0x1F)
    {
       case 0: USB_DBG("Device, ");   break;
@@ -791,7 +791,7 @@ void USB0_ENDP0Handler()
             USB_DBG("\n");
             break;
          case ADDRESSED:
-            
+
             size = GET8(USB0_CORE+COUNT0)&0x7F;
             if(size)
             {
@@ -845,7 +845,7 @@ void USB0_ENDP0Handler()
          USB_DBG("RX routine\n");
          EP0_RX_routine();
          break;
-         
+
          break;
    }
 }
@@ -854,31 +854,31 @@ void USB_init()
 {
    PUT32(USBSS+SYSCONFIG,1);	// start usb subsystem module reset
    while(GET32(USBSS+SYSCONFIG)&0b1);
-   
-   
+
+
    PUT32(USB0+USBxCTRL,1);		// start control module reset
    while(GET32(USB0+USBxCTRL)&0b1);
-   
-   
+
+
    PUT32(USB0+USBxMODE,(1<<8)|(1<<7));	// B type (peripheral) and from bit 8, not PHY
-   
+
    PUT8(USB0_CORE+INTRTXE,0x0001);	// disable all interrupt at musb core level exept for EP0 int
    PUT8(USB0_CORE+INTRRXE,0x0000);	// disable all interrupt at musb core level
    PUT8(USB0_CORE+INTRUSBE,0x00);	// disable all interrupt at musb core level
-   
+
    NVIC_ClearPending(USBINT0_IRQn);
-   
+
    NVIC_Enable(USBINT0_IRQn);
-   
-   
+
+
    //PUT32(USB0+USBxIRQENABLESET0,0x1);  // enable endpoint 0 interrupt
    PUT32(USB0+USBxIRQENABLESET1,1<<9);	// enable legacy musb interrupt?
    PUT32(USB0+USBxCTRL,1<<3);	// setup USB controller as legacy
    PUT16(USB0_CORE+INTRTX,1);	// enable endp 0 interrupt
-   
+
    PUT8(USB0_CORE+RXMAXP,64);
    PUT8(USB0_CORE+TXMAXP,64);
-   
+
    PUT8(USB0_CORE+POWER,GET8(USB0_CORE+POWER)|(1<<6));	// softconn = 1
    while(!USB_enumerated)
    {

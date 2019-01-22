@@ -363,7 +363,7 @@ static void PHY_Config_CMD()
    for(i=0;i<3;i++)
    {
       //GEL_TextOut("DDR PHY CMD%d Register configuration is in progress ....... \n","Output",1,1,1,i);
-      
+
       PUT32(CMD0_REG_PHY_CTRL_SLAVE_RATIO_0 + (i*0x34),CMD_PHY_CTRL_SLAVE_RATIO);
       PUT32(CMD0_REG_PHY_INVERT_CLKOUT_0    + (i*0x34),CMD_PHY_INVERT_CLKOUT);
    }
@@ -375,7 +375,7 @@ static void PHY_Config_DATA()
    for(i=0;i<2;i++)
    {
       //GEL_TextOut("DDR PHY DATA%d Register configuration is in progress ....... \n","Output",1,1,1,i);
-      
+
       PUT32(DATA0_REG_PHY_RD_DQS_SLAVE_RATIO_0     + (i*0xA4),DATA_PHY_RD_DQS_SLAVE_RATIO);
       PUT32(DATA0_REG_PHY_WR_DQS_SLAVE_RATIO_0     + (i*0xA4),DATA_PHY_WR_DQS_SLAVE_RATIO);
       PUT32(DATA0_REG_PHY_FIFO_WE_SLAVE_RATIO_0    + (i*0xA4),DATA_PHY_FIFO_WE_SLAVE_RATIO);
@@ -411,16 +411,16 @@ static void set_CLKOUT2(uint32_t mode)
 {
    unsigned int temp;
    unsigned int divider = 2; //change here if you want to pick a different divider
-   
+
    PUT32(CONF_XDMA_EVENT_INTR1,0x3); // Set Pinmux to mode 3 (and rest to zero)
    PUT32(CM_CLKOUT_CTRL, (divider-1) << 3); //Set divider (which is set above)
-   
+
    temp = GET32(CM_CLKOUT_CTRL);
    temp = (temp & ~(0x7) ) | mode;
    PUT32(CM_CLKOUT_CTRL,temp);
-   
+
    enable_SYS_CLKOUT2();
-   
+
    /*if(mode == 0)
     //GEL_TextOut(" **** SYS_CLKOUT2 = 32khz Crystal (divided by %d)\n",,,,,(unsigned int *)(divider));
     else if (mode == 1)
@@ -504,105 +504,105 @@ void Enter_DS0()
    //DDR2_EMIF_Config();
    //PUT32((0x80000000),0x12345678);
    //cmd_DDR2_EMIF_Config(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
-   
+
    PUT32((0x44e10e04),0x10000000); //MDDR SEL
    //PUT32((0x44e10e04),0x00000000); //DDR2 SEL
    //PUT32((0x44e10e0C),0x00010100); //Disable VTP with N & P = 0x1
    //PUT32((0x44e10e0C),0x0010107); //Disable VTP with N & P = 0x1
-   
-   
+
+
    PUT32((0x4c000e14),0x00000000); //Disable Internal VREF
-   
+
    //power down the PHYs from the EMIF controller
    PUT32((0x4c0000e4),0x00100000); //Configure DYN PD
    PUT32((0x4c0000e8),0x00100000); //Configure DYN PD
    //PUT32((0x4c0000ec),0x00100000); //Configure DYN PD
-   
+
    //PUT32((0x4c000008),0x40805332);  //disable ODT
    //    for(i=0;i<5000;i++)
    //      {
    //      }
-   
+
    //PUDIS for DATA
    //Weak Pull down for DQ, DM and DQS
    PUT32((0x44e11440),0x3FF00003);
    PUT32((0x44e11444),0x3FF00003);
-   
+
    PUT32((0x44e11404),0xFFE0018b);
    PUT32((0x44e11408),0xFFE0018b);
    PUT32((0x44e1140C),0xFFa0098B);
-   
+
    //Put DDR in Self Refresh
    PUT32((0x4c000038),0x000002a0);
    PUT32((0x4c00003C),0x000002a0);  //write to shadow register
-   
+
    //Control CKE from Control Module
    PUT32((0x44e1131c),0x00000001);  //disable CKE from control module
-   
+
    //PUT32((0x44e10e0C),0x000); //Disable VTP with N & P = 0x1
-   
+
    //Disable EMIF
    EMIF_PRCM_CLK_DISABLE();
-   
+
    PUT32((0x44e10470),0x00026a75); //OSC0_CLK/VTP_CLK gating
-   
+
 }
 
 void Exit_DS0()
 {
-   
+
 }
 
 void DDR3_EMIF_Config()
 {
    EMIF_PRCM_CLK_ENABLE();
-   
+
    //GEL_TextOut("DDR PHY Configuration in progress \n","Output",1,1,1);
-   
+
    VTP_Enable();
-   
+
    PHY_Config_CMD();
    PHY_Config_DATA();
-   
+
    //GEL_TextOut("Setting IO control registers....... \n","Output",1,1,1,i);
    PUT32(DDR_CMD0_IOCTRL,DDR_IOCTRL_VALUE);
    PUT32(DDR_CMD1_IOCTRL,DDR_IOCTRL_VALUE);
    PUT32(DDR_CMD2_IOCTRL,DDR_IOCTRL_VALUE);
    PUT32(DDR_DATA0_IOCTRL,DDR_IOCTRL_VALUE);
    PUT32(DDR_DATA1_IOCTRL,DDR_IOCTRL_VALUE);
-   
+
    //IO to work for DDR3
    PUT32(DDR_IO_CTRL, GET32(DDR_IO_CTRL) & ~0x10000000 );
-   
+
    //CKE controlled by EMIF/DDR_PHY
    PUT32(DDR_CKE_CTRL, GET32(DDR_CKE_CTRL) | 0x00000001);
-   
+
    //GEL_TextOut("EMIF Timing register configuration is in progress ....... \n","Output",1,1,1);
-   
+
    PUT32(EMIF_DDR_PHY_CTRL_1_REG, ALLOPP_DDR3_READ_LATENCY);
    PUT32(EMIF_DDR_PHY_CTRL_1_SHDW_REG, ALLOPP_DDR3_READ_LATENCY);
    PUT32(EMIF_DDR_PHY_CTRL_2_REG, ALLOPP_DDR3_READ_LATENCY);
-   
+
    PUT32(EMIF_SDRAM_TIM_1_REG,ALLOPP_DDR3_SDRAM_TIMING1);
    PUT32(EMIF_SDRAM_TIM_1_SHDW_REG,ALLOPP_DDR3_SDRAM_TIMING1);
-   
+
    PUT32(EMIF_SDRAM_TIM_2_REG,ALLOPP_DDR3_SDRAM_TIMING2);
    PUT32(EMIF_SDRAM_TIM_2_SHDW_REG,ALLOPP_DDR3_SDRAM_TIMING2);
-   
+
    PUT32(EMIF_SDRAM_TIM_3_REG,ALLOPP_DDR3_SDRAM_TIMING3);
    PUT32(EMIF_SDRAM_TIM_3_SHDW_REG,ALLOPP_DDR3_SDRAM_TIMING3);
-   
+
    PUT32(EMIF_SDRAM_REF_CTRL_REG,ALLOPP_DDR3_REF_CTRL);
    PUT32(EMIF_SDRAM_REF_CTRL_SHDW_REG,ALLOPP_DDR3_REF_CTRL);
    PUT32(EMIF_ZQ_CONFIG_REG,ALLOPP_DDR3_ZQ_CONFIG);
    PUT32(EMIF_SDRAM_CONFIG_REG, ALLOPP_DDR3_SDRAM_CONFIG);
-   
+
    //GEL_TextOut("EMIF Timing register configuration is done ....... \n","Output",1,1,1);
-   
+
    if((GET32(EMIF_STATUS_REG) & 0x4) == 0x4)
    {
       //GEL_TextOut("PHY is READY!!\n","Output",1,1,1);
    }
-   
+
    //GEL_TextOut("DDR PHY Configuration done \n","Output",1,1,1);
 }

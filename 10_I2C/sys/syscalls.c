@@ -150,20 +150,20 @@ caddr_t _sbrk (int incr)
    extern char __stack_start__;
    static char *heap_end = NULL;
    char *prev_heap_end = NULL;
-   
+
    STRACE(UART0,"_sbrk\n",6);
 
    if (heap_end == 0) {
       heap_end = &_end;
    }
-   
-   
+
+
    prev_heap_end = heap_end;
    if (heap_end + incr > &__stack_start__) {
       _write (1, "Heap and stack collision\n", 26);
       errno = ENOMEM;
    }
-   
+
    heap_end += incr;
    return (caddr_t) prev_heap_end;
 }

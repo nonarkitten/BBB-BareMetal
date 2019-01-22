@@ -215,18 +215,18 @@ void UART_initUART(UART_t uart, unsigned int baudrate, STOP_BIT_t stopBit, PARIT
       switch(uart)
       {
          case UART0: // tx=1.11  rx=1.10  cts=1.8  rts=1.9
-            
+
             GPIO_initPort(GPIO1);
             CM_setCtrlModule(CM_conf_uart0_txd,0); // do nothing on UART0_tx
             CM_setCtrlModule(CM_conf_uart0_rxd,(1<<4)|(1<<5)); // set pullup/pulldown & receiver enabled on UART0_rx
             PAD_setMode(CM_conf_uart0_txd,MODE_0); // set p1.11 as UART0_tx
             PAD_setMode(CM_conf_uart0_rxd,MODE_0); // set p1.10 as UART0_rx
-            
+
             unsigned int temp = CKM_getCLKModuleRegister(CKM_WKUP,CKM_WKUP_CLKSTCTRL);
             temp &= ~(0b11);
             temp |= 0b10;      // software-forced wake-up transition on the "always on clock domain", TRM Table 8-92
             CKM_setCLKModuleRegister(CKM_WKUP,CKM_WKUP_CLKSTCTRL,temp);
-            
+
             temp = CKM_getCLKModuleRegister(CKM_PER,CKM_PER_L4HS_CLKSTCTRL);
             temp &= ~(0b11);
             temp |= 0b10;      // software-forced wake up transition on the L4 high speed domain
@@ -237,27 +237,27 @@ void UART_initUART(UART_t uart, unsigned int baudrate, STOP_BIT_t stopBit, PARIT
             temp |= 0b10;      // Module is explicitly enabled,    TRM Table 8-137
                    CKM_setCLKModuleRegister(CKM_WKUP,CKM_WKUP_UART0_CLKCTRL,temp);
             while((CKM_getCLKModuleRegister(CKM_WKUP, CKM_WKUP_UART0_CLKCTRL) & (0b11<<16)) != 0); // wait until clock transition is complete
-            
+
             // TODO: verifiy it next block is needed for uart0
             // warning, why would the UART1 registers need modification when configuring UART0?
             temp = CKM_getCLKModuleRegister(CKM_PER,CKM_PER_UART1_CLKCTRL);
             temp &= ~(0b11);
             temp |= 0b10;      // Module is explicitly enabled,    TRM Table 8-137
                    CKM_setCLKModuleRegister(CKM_PER,CKM_PER_UART1_CLKCTRL,temp);
-            
+
             temp = GET32(uart_base+0x54);    // SYSC
             temp |= 0x2;      // uart module reset
             PUT32(uart_base+0x54,temp);
-            
+
             while((GET32(uart_base+0x58)&1)==0);   // wait for reset to be complete
-            
+
             temp = GET8(uart_base+0x54);
             temp |= (0x1<<3); // no idle
             PUT8(uart_base+0x54,temp);
-            
+
             while(((GET32(uart_base+0x14)&0x40)!=0x40));    // wait for txfifo to be empty
-            
-            
+
+
             float div = 48000000.0/(16.0*(float)baudrate);
             unsigned int intdiv = (unsigned int) div;
             PUT8(uart_base+0x04,0);
@@ -275,7 +275,7 @@ void UART_initUART(UART_t uart, unsigned int baudrate, STOP_BIT_t stopBit, PARIT
 //            PUT8(uart_base+0x00,26);         // DLL/DHL value for 115200
             PUT8(uart_base+0x0C,0x3);        // set uart as 8 bit
             PUT8(uart_base+0x20,0);          // uart 16x oversampling
-            
+
             break;
          // TODO: implement UART1-5
          case UART1:
@@ -296,7 +296,7 @@ void UART_putC(UART_t uart, char c)
 {
    unsigned int uart_base = UART_ARRAY_BASE[uart];
    while((GET8(uart_base+0x14)&0x20)!=0x20);   //wait until txfifo is empty
-    
+
    PUT8(uart_base +0,c);
    while((GET8(uart_base+0x14)&0x20)!=0x20);   //wait until txfifo is empty
 
@@ -331,19 +331,19 @@ int UART_getString(UART_t uart, char *buf, unsigned int length)
 
 /*
  The MIT License (MIT)
- 
+
  Copyright (c) 2015 Alexis Marquet
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

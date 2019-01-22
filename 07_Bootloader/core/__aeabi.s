@@ -241,7 +241,7 @@ Boston, MA 02111-1307, USA.  */
 
 
 
-/* Runtime ABI for the ARM Cortex-M0  
+/* Runtime ABI for the ARM Cortex-M0
  * uldivmod.S: unsigned 64 bit division
  *
  * Copyright (c) 2012 Jörg Mische <bobbl@gmx.de>

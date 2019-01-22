@@ -7,5 +7,5 @@
 
 void types (void)
 {
-   
+
 }

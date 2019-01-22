@@ -1,4 +1,5 @@
 CHAIN=arm-none-eabi
+CFLAGS=-std=c99 -Wall
 OBJ=obj
 BIN=bin
 OBJFILES=\
@@ -27,7 +28,7 @@ $(OBJ)/%.o: %.s
 	$(CHAIN)-as -o $@ $<
 
 $(OBJ)/%.o: %.c
-	$(CHAIN)-gcc -c -o $@ $<
+	$(CHAIN)-gcc $(CFLAGS) -c -o $@ $<
 
 .PHONY: clean
 clean:

@@ -1,9 +1,9 @@
 CHAIN=arm-none-eabi
 OBJ=obj
 BIN=bin
-OBJFILES=$(sort \
+OBJFILES=\
     start.o\
-    main.o)
+    main.o
 BINARY=$(BIN)/spl.boot
 
 .PHONY: all

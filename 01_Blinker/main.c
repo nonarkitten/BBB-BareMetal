@@ -11,25 +11,23 @@ extern unsigned int GET32 (unsigned int address);
 #define CM_PER_BASE		0x44e00000
 #define CM_PER_GPIO1		0xAC
 
-#define TIME 500000
+#define TIME 50000000
 void _main (void)
 {
-	volatile unsigned int ra;
-		PUT32(CM_PER_BASE+CM_PER_GPIO1, 1<<18 | 2);
-		ra = GET32(GPIO1_BASE+GPIO_OE);
-		ra &= ~(15<<21);
-		PUT32(GPIO1_BASE+GPIO_OE,ra);
-	for(;;)
-	{
-		PUT32(GPIO1_BASE+GPIO_SETDATAOUT, (15<<21));
-		for(ra = 0; ra < TIME; ra ++);
-		PUT32(GPIO1_BASE+GPIO_CLRDATAOUT,15<<21);
-		for(ra = 0; ra < TIME; ra ++);
-	}
-   return;
+    volatile unsigned int ra;
+    PUT32(CM_PER_BASE + CM_PER_GPIO1, 1 << 18 | 2);
+    ra = GET32(GPIO1_BASE + GPIO_OE);
+    ra &= ~(15 << 21);
+    PUT32(GPIO1_BASE + GPIO_OE, ra);
+    for (;;) {
+        PUT32(GPIO1_BASE + GPIO_SETDATAOUT, (15 << 21));
+        for (ra = 0; ra < TIME; ra ++);
+        PUT32(GPIO1_BASE + GPIO_CLRDATAOUT, 15 << 21);
+        for (ra = 0; ra < TIME; ra ++);
+    }
+    return;
 }
 
-/*
 /*
 The MIT License (MIT)
 
@@ -52,5 +50,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-*/
 */

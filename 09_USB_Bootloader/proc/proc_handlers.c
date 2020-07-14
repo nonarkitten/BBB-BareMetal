@@ -120,180 +120,180 @@ void McSPI1INT_IRQHandler(void) ALIAS(IntDefaultHandler);
 static void Reserved(void);
 
 void (* const _fnRAMVectors[128])(void) = {
-   EMUINT_IRQHandler,                        // 0
-   COMMTX_IRQHandler,                        // 1
-   COMMRX_IRQHandler,                        //
-   BENCH_IRQHandler,
-   ELM_IRQ_IRQHandler,
-   Reserved,
-   Reserved,
-   NMI_IRQHandler,
-   Reserved,
-   L3DEBUG_IRQHandler,
-   L3APPINT_IRQHandler,
-   PRCMINT_IRQHandler,
-   EDMACOMPINT_IRQHandler,
-   EDMAMPERR_IRQHandler,
-   EDMAERRINT_IRQHandler,
-   Reserved,
-   ADC_TSC_GENINT_IRQHandler,
-   USBSSINT_IRQHandler,
-   USBINT0_IRQHandler,
-   USBINT1_IRQHandler,
-   PRU_ICSS_EVTOUT0_IRQHandler,
-   PRU_ICSS_EVTOUT1_IRQHandler_IRQHandler,
-   PRU_ICSS_EVTOUT2_IRQHandler_IRQHandler,
-   PRU_ICSS_EVTOUT3_IRQHandler_IRQHandler,
-   PRU_ICSS_EVTOUT4_IRQHandler_IRQHandler,
-   PRU_ICSS_EVTOUT5_IRQHandler_IRQHandler,
-   PRU_ICSS_EVTOUT6_IRQHandler_IRQHandler,
-   PRU_ICSS_EVTOUT7_IRQHandler_IRQHandler,
-   MMCSD1INT_IRQHandler,
-   MMCSD2INT_IRQHandler,
-   I2C2INT_IRQHandler,
-   eCAP0INT_IRQHandler,
-   GPIOINT2A_IRQHandler,
-   GPIOINT2B_IRQHandler,
-   USBWAKEUP_IRQHandler,
-   Reserved,
-   LCDCINT_IRQHandler,
-   GFXINT_IRQHandler,
-   Reserved,
-   ePWM2INT_IRQHandler,
-   THRESH_PULSE_3PGSWRXTHR0_IRQHandler,
-   RX_PULSE_3PGSWRXINT0_IRQHandler,
-   TX_PULSE_3PGSWTXINT0_IRQHandler,
-   MISC_PULSE_3PGSWMISC0_IRQHandler,
-   UART3INT_IRQHandler,
-   UART4INT_IRQHandler,
-   UART5INT_IRQHandler,
-   eCAP1INT_IRQHandler,
-   Reserved,
-   Reserved,
-   Reserved,
-   Reserved,
-   DCAN0_INT0_IRQHandler,
-   DCAN0_INT1_IRQHandler,
-   DCAN0PARITY_IRQHandler,
-   DCAN1_INT0_IRQHandler,
-   DCAN1_INT1_IRQHandler,
-   DCAN1PARITY_IRQHandler,
-   ePWM0_TZINT_IRQHandler,
-   ePWM1_TZINT_IRQHandler,
-   ePWM2_TZINT_IRQHandler,
-   eCAP2INT_IRQHandler,
-   GPIOINT3A_IRQHandler,
-   GPIOINT3B_IRQHandler,
-   MMCSD0INT_IRQHandler,
-   McSPI0INT_IRQHandler,
-   TINT0_IRQHandler,
-   TINT1_1MS_IRQHandler,
-   TINT2_IRQHandler,
-   TINT3_IRQHandler,
-   I2C0INT_IRQHandler,
-   I2C1INT_IRQHandler,
-   UART0INT_IRQHandler,
-   UART1INT_IRQHandler,
-   UART2INT_IRQHandler,
-   RTCINT_IRQHandler,
-   RTCALARMINT_IRQHandler,
-   MBINT0_IRQHandler,
-   M3_TXEV_IRQHandler,
-   eQEP0INT_IRQHandler,
-   MCATXINT0_IRQHandler,
-   MCARXINT0_IRQHandler,
-   MCATXINT1_IRQHandler,
-   MCARXINT1_IRQHandler,
-   Reserved,
-   Reserved,
-   ePWM0INT_IRQHandler,
-   ePWM1INT_IRQHandler,
-   eQEP1INT_IRQHandler,
-   eQEP2INT_IRQHandler,
-   DMA_INTR_PIN2_IRQHandler,
-   WDT1INT_IRQHandler,
-   TINT4_IRQHandler,
-   TINT5_IRQHandler,
-   TINT6_IRQHandler,
-   TINT7_IRQHandler,
-   GPIOINT0A_IRQHandler,
-   GPIOINT0B_IRQHandler,
-   GPIOINT1A_IRQHandler,
-   GPIOINT1B_IRQHandler,
-   GPMCINT_IRQHandler,
-   DDRERR0_IRQHandler,
-   Reserved,
-   Reserved,
-   Reserved,
-   Reserved,
-   Reserved,
-   Reserved,
-   Reserved,
-   Reserved,
-   Reserved,
-   Reserved,
-   TCERRINT0_IRQHandler,
-   TCERRINT1_IRQHandler,
-   TCERRINT2_IRQHandler,
-   ADC_TSC_PENINT_IRQHandler,
-   Reserved,
-   Reserved,
-   Reserved,
-   Reserved,
-   SMRFLX_MPU_IRQHandler,
-   SMRFLX_Core_IRQHandler,
-   Reserved,
-   DMA_INTR_PIN0_IRQHandler,
-   DMA_INTR_PIN1_IRQHandler,
-   McSPI1INT_IRQHandler,
-   Reserved,
-   Reserved
+    EMUINT_IRQHandler,                        // 0
+    COMMTX_IRQHandler,                        // 1
+    COMMRX_IRQHandler,                        //
+    BENCH_IRQHandler,
+    ELM_IRQ_IRQHandler,
+    Reserved,
+    Reserved,
+    NMI_IRQHandler,
+    Reserved,
+    L3DEBUG_IRQHandler,
+    L3APPINT_IRQHandler,
+    PRCMINT_IRQHandler,
+    EDMACOMPINT_IRQHandler,
+    EDMAMPERR_IRQHandler,
+    EDMAERRINT_IRQHandler,
+    Reserved,
+    ADC_TSC_GENINT_IRQHandler,
+    USBSSINT_IRQHandler,
+    USBINT0_IRQHandler,
+    USBINT1_IRQHandler,
+    PRU_ICSS_EVTOUT0_IRQHandler,
+    PRU_ICSS_EVTOUT1_IRQHandler_IRQHandler,
+    PRU_ICSS_EVTOUT2_IRQHandler_IRQHandler,
+    PRU_ICSS_EVTOUT3_IRQHandler_IRQHandler,
+    PRU_ICSS_EVTOUT4_IRQHandler_IRQHandler,
+    PRU_ICSS_EVTOUT5_IRQHandler_IRQHandler,
+    PRU_ICSS_EVTOUT6_IRQHandler_IRQHandler,
+    PRU_ICSS_EVTOUT7_IRQHandler_IRQHandler,
+    MMCSD1INT_IRQHandler,
+    MMCSD2INT_IRQHandler,
+    I2C2INT_IRQHandler,
+    eCAP0INT_IRQHandler,
+    GPIOINT2A_IRQHandler,
+    GPIOINT2B_IRQHandler,
+    USBWAKEUP_IRQHandler,
+    Reserved,
+    LCDCINT_IRQHandler,
+    GFXINT_IRQHandler,
+    Reserved,
+    ePWM2INT_IRQHandler,
+    THRESH_PULSE_3PGSWRXTHR0_IRQHandler,
+    RX_PULSE_3PGSWRXINT0_IRQHandler,
+    TX_PULSE_3PGSWTXINT0_IRQHandler,
+    MISC_PULSE_3PGSWMISC0_IRQHandler,
+    UART3INT_IRQHandler,
+    UART4INT_IRQHandler,
+    UART5INT_IRQHandler,
+    eCAP1INT_IRQHandler,
+    Reserved,
+    Reserved,
+    Reserved,
+    Reserved,
+    DCAN0_INT0_IRQHandler,
+    DCAN0_INT1_IRQHandler,
+    DCAN0PARITY_IRQHandler,
+    DCAN1_INT0_IRQHandler,
+    DCAN1_INT1_IRQHandler,
+    DCAN1PARITY_IRQHandler,
+    ePWM0_TZINT_IRQHandler,
+    ePWM1_TZINT_IRQHandler,
+    ePWM2_TZINT_IRQHandler,
+    eCAP2INT_IRQHandler,
+    GPIOINT3A_IRQHandler,
+    GPIOINT3B_IRQHandler,
+    MMCSD0INT_IRQHandler,
+    McSPI0INT_IRQHandler,
+    TINT0_IRQHandler,
+    TINT1_1MS_IRQHandler,
+    TINT2_IRQHandler,
+    TINT3_IRQHandler,
+    I2C0INT_IRQHandler,
+    I2C1INT_IRQHandler,
+    UART0INT_IRQHandler,
+    UART1INT_IRQHandler,
+    UART2INT_IRQHandler,
+    RTCINT_IRQHandler,
+    RTCALARMINT_IRQHandler,
+    MBINT0_IRQHandler,
+    M3_TXEV_IRQHandler,
+    eQEP0INT_IRQHandler,
+    MCATXINT0_IRQHandler,
+    MCARXINT0_IRQHandler,
+    MCATXINT1_IRQHandler,
+    MCARXINT1_IRQHandler,
+    Reserved,
+    Reserved,
+    ePWM0INT_IRQHandler,
+    ePWM1INT_IRQHandler,
+    eQEP1INT_IRQHandler,
+    eQEP2INT_IRQHandler,
+    DMA_INTR_PIN2_IRQHandler,
+    WDT1INT_IRQHandler,
+    TINT4_IRQHandler,
+    TINT5_IRQHandler,
+    TINT6_IRQHandler,
+    TINT7_IRQHandler,
+    GPIOINT0A_IRQHandler,
+    GPIOINT0B_IRQHandler,
+    GPIOINT1A_IRQHandler,
+    GPIOINT1B_IRQHandler,
+    GPMCINT_IRQHandler,
+    DDRERR0_IRQHandler,
+    Reserved,
+    Reserved,
+    Reserved,
+    Reserved,
+    Reserved,
+    Reserved,
+    Reserved,
+    Reserved,
+    Reserved,
+    Reserved,
+    TCERRINT0_IRQHandler,
+    TCERRINT1_IRQHandler,
+    TCERRINT2_IRQHandler,
+    ADC_TSC_PENINT_IRQHandler,
+    Reserved,
+    Reserved,
+    Reserved,
+    Reserved,
+    SMRFLX_MPU_IRQHandler,
+    SMRFLX_Core_IRQHandler,
+    Reserved,
+    DMA_INTR_PIN0_IRQHandler,
+    DMA_INTR_PIN1_IRQHandler,
+    McSPI1INT_IRQHandler,
+    Reserved,
+    Reserved
 };
 
 void procIrqHandler (unsigned int irq_n)
 {
-   typedef void (*IntVector)(void);
-   IntVector vect = _fnRAMVectors[irq_n];
-   (*vect)();
+    typedef void (*IntVector)(void);
+    IntVector vect = _fnRAMVectors[irq_n];
+    (*vect)();
 }
 
 void BSP_fiq (void)
 {
-   // GP device does not support FIQ
-   while(1);
+    // GP device does not support FIQ
+    while (1);
 
 }
 void BSP_abort(char *str, uint32_t instruction)
 {
-   while(1);
+    while (1);
 }
 
 void IntDefaultHandler (void)
 {
-   while(1);
+    while (1);
 }
 
 static void Reserved(void)
 {
-   while(1);
+    while (1);
 }
 
 
 /*
  The MIT License (MIT)
- 
+
  Copyright (c) 2015 Alexis Marquet
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

@@ -38,51 +38,49 @@ unsigned int c ;
 
 int main (void)
 {
-   
-   unsigned int length = 0;
-   unsigned long long int sumcheck = 0;
-   unsigned long long int sum = 0;
-   char *mem = (char*)BASE_ADRESS;
-   
-   printf(" (c) Alexis Marquet\n");
-   printf("Bootloader ready, code destination = 0x%X\n",(unsigned int)mem);
-   printf("Asking for boot file....... \005 \n");
-   
-   
-   int l = read(0,&length,sizeof(length));
-   int m = read(0,mem,length);
-   int s = read(0,&sum,sizeof(sum));
-   
-   for(uint32_t i = 0; i < length; i++)
-   {
-      sumcheck += mem[i];
-   }
-   if(sum!=sumcheck)
-   {
-      fprintf(stderr,"Error when checking SUM, %llx != %llx\n",sum, sumcheck);
-      while(1);
-   }
-   printf("about to branch...\n");
-   BRANCHTO(BASE_ADRESS);
-   return 0;
+
+    unsigned int length = 0;
+    unsigned long long int sumcheck = 0;
+    unsigned long long int sum = 0;
+    char *mem = (char*)BASE_ADRESS;
+
+    printf(" (c) Alexis Marquet\n");
+    printf("Bootloader ready, code destination = 0x%X\n", (unsigned int)mem);
+    printf("Asking for boot file....... \005 \n");
+
+
+    int l = read(0, &length, sizeof(length));
+    int m = read(0, mem, length);
+    int s = read(0, &sum, sizeof(sum));
+
+    for (uint32_t i = 0; i < length; i++) {
+        sumcheck += mem[i];
+    }
+    if (sum != sumcheck) {
+        fprintf(stderr, "Error when checking SUM, %llx != %llx\n", sum, sumcheck);
+        while (1);
+    }
+    printf("about to branch...\n");
+    BRANCHTO(BASE_ADRESS);
+    return 0;
 }
 
 
 /*
  The MIT License (MIT)
- 
+
  Copyright (c) 2015 Alexis Marquet
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

@@ -264,163 +264,170 @@ extern void PUT32(uint32_t, uint32_t);
 
 uint32_t GetInputClockFrequency()
 {
-   uint32_t temp = GET32(CONTROL_STATUS) >> 22;
-   temp &= 0x3;
-   
-   switch(temp)
-   {
-      case 0: return 19; break;	// 19.2 MHz
-      case 1: return 24; break;	//   24 MHz
-      case 2: return 25; break;	//   25 MHz
-      case 3: return 26; break;	//   26 MHz
-         // no default as x &= 0x3 -> x = [0:1:2:3]
-   }
-   return 0;   // never happens, only to remove compilation warning
+    uint32_t temp = GET32(CONTROL_STATUS) >> 22;
+    temp &= 0x3;
+
+    switch (temp) {
+    case 0:
+        return 19;
+        break;	// 19.2 MHz
+    case 1:
+        return 24;
+        break;	//   24 MHz
+    case 2:
+        return 25;
+        break;	//   25 MHz
+    case 3:
+        return 26;
+        break;	//   26 MHz
+        // no default as x &= 0x3 -> x = [0:1:2:3]
+    }
+    return 0;   // never happens, only to remove compilation warning
 }
 void MPU_PLL_Config(uint32_t clkin, uint32_t n, uint32_t m, uint32_t m2)
 {
-   uint32_t clkmode, clksel, div_m2;
-   
-   // TODO: fix with CLK_module
-   clkmode = GET32(CM_CLKMODE_DPLL_MPU);
-   clksel = GET32(CM_CLKSEL_DPLL_MPU);
-   div_m2 = GET32(CM_DIV_M2_DPLL_MPU);
-   
-   // put the DPLL in bypass mode
-   PUT32(CM_CLKMODE_DPLL_MPU,0x4);
-   // wait for bypass status
-   while((GET32(CM_IDLEST_DPLL_MPU) & 0x101) != 0x100);
-   
-   // set multiply and divide values
-   clksel &= ~0x7FFFF;
-   clksel |= ((m<<0x8) | n);
-   PUT32(CM_CLKSEL_DPLL_MPU,clksel);
-   div_m2 &= ~0x1F;
-   div_m2 |= m2;
-   PUT32(CM_DIV_M2_DPLL_MPU,div_m2);
-   
-   // now lock the DPLL
-   clkmode |= 0x07;
-   PUT32(CM_CLKMODE_DPLL_MPU,clkmode);
-   //wait for lock
-   while((GET32(CM_IDLEST_DPLL_MPU) & 0x101) != 0x001);
+    uint32_t clkmode, clksel, div_m2;
+
+    // TODO: fix with CLK_module
+    clkmode = GET32(CM_CLKMODE_DPLL_MPU);
+    clksel = GET32(CM_CLKSEL_DPLL_MPU);
+    div_m2 = GET32(CM_DIV_M2_DPLL_MPU);
+
+    // put the DPLL in bypass mode
+    PUT32(CM_CLKMODE_DPLL_MPU, 0x4);
+    // wait for bypass status
+    while ((GET32(CM_IDLEST_DPLL_MPU) & 0x101) != 0x100);
+
+    // set multiply and divide values
+    clksel &= ~0x7FFFF;
+    clksel |= ((m << 0x8) | n);
+    PUT32(CM_CLKSEL_DPLL_MPU, clksel);
+    div_m2 &= ~0x1F;
+    div_m2 |= m2;
+    PUT32(CM_DIV_M2_DPLL_MPU, div_m2);
+
+    // now lock the DPLL
+    clkmode |= 0x07;
+    PUT32(CM_CLKMODE_DPLL_MPU, clkmode);
+    //wait for lock
+    while ((GET32(CM_IDLEST_DPLL_MPU) & 0x101) != 0x001);
 }
 
 void CORE_PLL_Config(uint32_t clkin, uint32_t n, uint32_t m, uint32_t m4, uint32_t m5, uint32_t m6)
 {
-   uint32_t clkmode, clksel, div_m4, div_m5, div_m6;
-   
+    uint32_t clkmode, clksel, div_m4, div_m5, div_m6;
 
-   clkmode = GET32(CM_CLKMODE_DPLL_CORE);
-   clksel = GET32(CM_CLKSEL_DPLL_CORE);
-   div_m4 = GET32(CM_DIV_M4_DPLL_CORE);
-   div_m5 = GET32(CM_DIV_M5_DPLL_CORE);
-   div_m6 = GET32(CM_DIV_M6_DPLL_CORE);
-   
-   // put DPLL in bypass mode
-   clkmode &= ~0x7;
-   clkmode |= 0x4;
-   PUT32(CM_CLKMODE_DPLL_CORE,clkmode);
-   // wait for bypass status
-   while((GET32(CM_IDLEST_DPLL_CORE) & 0x100) != 0x100);
-   
-   // set multiply and divide values
-   clksel &= ~0x7FFFF;
-   clksel |= (m<<8)|n;
-   PUT32(CM_CLKSEL_DPLL_CORE,clksel);
-   div_m4 = m4;	// 200MHz
-   div_m5 = m5;	// 250MHz
-   div_m6 = m6;	// 500MHz
-   PUT32(CM_DIV_M4_DPLL_CORE,div_m4);
-   PUT32(CM_DIV_M5_DPLL_CORE,div_m5);
-   PUT32(CM_DIV_M6_DPLL_CORE,div_m6);
-   
-   // now lock the PLL
-   clkmode &= ~0x7;
-   clkmode |= 0x7;
-   PUT32(CM_CLKMODE_DPLL_CORE,clkmode);
-   // wait for lock
-   while((GET32(CM_IDLEST_DPLL_CORE) & 0x1) != 0x1);
+
+    clkmode = GET32(CM_CLKMODE_DPLL_CORE);
+    clksel = GET32(CM_CLKSEL_DPLL_CORE);
+    div_m4 = GET32(CM_DIV_M4_DPLL_CORE);
+    div_m5 = GET32(CM_DIV_M5_DPLL_CORE);
+    div_m6 = GET32(CM_DIV_M6_DPLL_CORE);
+
+    // put DPLL in bypass mode
+    clkmode &= ~0x7;
+    clkmode |= 0x4;
+    PUT32(CM_CLKMODE_DPLL_CORE, clkmode);
+    // wait for bypass status
+    while ((GET32(CM_IDLEST_DPLL_CORE) & 0x100) != 0x100);
+
+    // set multiply and divide values
+    clksel &= ~0x7FFFF;
+    clksel |= (m << 8) | n;
+    PUT32(CM_CLKSEL_DPLL_CORE, clksel);
+    div_m4 = m4;	// 200MHz
+    div_m5 = m5;	// 250MHz
+    div_m6 = m6;	// 500MHz
+    PUT32(CM_DIV_M4_DPLL_CORE, div_m4);
+    PUT32(CM_DIV_M5_DPLL_CORE, div_m5);
+    PUT32(CM_DIV_M6_DPLL_CORE, div_m6);
+
+    // now lock the PLL
+    clkmode &= ~0x7;
+    clkmode |= 0x7;
+    PUT32(CM_CLKMODE_DPLL_CORE, clkmode);
+    // wait for lock
+    while ((GET32(CM_IDLEST_DPLL_CORE) & 0x1) != 0x1);
 }
 void DDR_PLL_Config(uint32_t clkin, uint32_t n, uint32_t m, uint32_t m2)
 {
-   uint32_t clkmode, clksel, div_m2;
-   
-   
-   clkmode = GET32(CM_CLKMODE_DPLL_DDR);
-   clksel = GET32(CM_CLKSEL_DPLL_DDR);
-   div_m2 = GET32(CM_DIV_M2_DPLL_DDR);
-   
-   clkmode &= ~0x7;
-   clkmode |= 0x4;
-   PUT32(CM_CLKMODE_DPLL_DDR,clkmode);
-   while((GET32(CM_IDLEST_DPLL_DDR) & 0x100) != 0x100);
-   
-   clksel &= ~0x7FFFF;
-   clksel |= (m<<8)|n;
-   PUT32(CM_CLKSEL_DPLL_DDR,clksel);
-   div_m2 = GET32(CM_DIV_M2_DPLL_DDR);
-   div_m2 &= ~0x1F;
-   div_m2 |= m2;
-   PUT32(CM_DIV_M2_DPLL_DDR,div_m2);
-   clkmode &= ~0x7;
-   clkmode |= 0x7;
-   PUT32(CM_CLKMODE_DPLL_DDR,clkmode);
-   
-   while((GET32(CM_IDLEST_DPLL_DDR) & 0x1) != 0x1);
+    uint32_t clkmode, clksel, div_m2;
+
+
+    clkmode = GET32(CM_CLKMODE_DPLL_DDR);
+    clksel = GET32(CM_CLKSEL_DPLL_DDR);
+    div_m2 = GET32(CM_DIV_M2_DPLL_DDR);
+
+    clkmode &= ~0x7;
+    clkmode |= 0x4;
+    PUT32(CM_CLKMODE_DPLL_DDR, clkmode);
+    while ((GET32(CM_IDLEST_DPLL_DDR) & 0x100) != 0x100);
+
+    clksel &= ~0x7FFFF;
+    clksel |= (m << 8) | n;
+    PUT32(CM_CLKSEL_DPLL_DDR, clksel);
+    div_m2 = GET32(CM_DIV_M2_DPLL_DDR);
+    div_m2 &= ~0x1F;
+    div_m2 |= m2;
+    PUT32(CM_DIV_M2_DPLL_DDR, div_m2);
+    clkmode &= ~0x7;
+    clkmode |= 0x7;
+    PUT32(CM_CLKMODE_DPLL_DDR, clkmode);
+
+    while ((GET32(CM_IDLEST_DPLL_DDR) & 0x1) != 0x1);
 }
 void PER_PLL_Config(uint32_t clkin, uint32_t n, uint32_t m, uint32_t m2)
 {
-   uint32_t clkmode,clksel,div_m2;
+    uint32_t clkmode, clksel, div_m2;
 
-   
-   clkmode = GET32(CM_CLKMODE_DPLL_PER);
-   clksel = GET32(CM_CLKSEL_DPLL_PER);
-   div_m2 = GET32(CM_DIV_M2_DPLL_PER);
-   
-   clkmode &= ~0x7;
-   clkmode |= 0x4;
-   PUT32(CM_CLKMODE_DPLL_PER,clkmode);
-   while((GET32(CM_IDLEST_DPLL_PER) & 0x100) != 0x100);
-   
-   clksel &= 0x00F00000;
-   clksel |= 0x04000000; // SD divider = 4 for both OPP100 and OPP50
-   clksel |= (m<<8)|n;
-   PUT32(CM_CLKSEL_DPLL_PER,clksel);
-   div_m2 = 0xFFFFFF80 | m2;
-   PUT32(CM_DIV_M2_DPLL_PER,div_m2);
-   clkmode &= 0xFFFFFFF8;
-   clkmode |= 0x7;
-   PUT32(CM_CLKMODE_DPLL_PER,clkmode);
-   
-   while((GET32(CM_IDLEST_DPLL_PER) & 0x1) != 0x1);
+
+    clkmode = GET32(CM_CLKMODE_DPLL_PER);
+    clksel = GET32(CM_CLKSEL_DPLL_PER);
+    div_m2 = GET32(CM_DIV_M2_DPLL_PER);
+
+    clkmode &= ~0x7;
+    clkmode |= 0x4;
+    PUT32(CM_CLKMODE_DPLL_PER, clkmode);
+    while ((GET32(CM_IDLEST_DPLL_PER) & 0x100) != 0x100);
+
+    clksel &= 0x00F00000;
+    clksel |= 0x04000000; // SD divider = 4 for both OPP100 and OPP50
+    clksel |= (m << 8) | n;
+    PUT32(CM_CLKSEL_DPLL_PER, clksel);
+    div_m2 = 0xFFFFFF80 | m2;
+    PUT32(CM_DIV_M2_DPLL_PER, div_m2);
+    clkmode &= 0xFFFFFFF8;
+    clkmode |= 0x7;
+    PUT32(CM_CLKMODE_DPLL_PER, clkmode);
+
+    while ((GET32(CM_IDLEST_DPLL_PER) & 0x1) != 0x1);
 }
 
 void DISP_PLL_Config(uint32_t clkin, uint32_t n, uint32_t m, uint32_t m2)
 {
-   uint32_t ref_clk;
-   uint32_t clkmode, clksel, div_m2;
-   
-   ref_clk = clkin/(n+1);
-   clkmode = (ref_clk*m)/m2;
-   
-   clkmode = GET32(CM_CLKMODE_DPLL_DISP);
-   clksel = GET32(CM_CLKSEL_DPLL_DISP);
-   clksel = GET32(CM_DIV_M2_DPLL_DISP);
-   
-   clkmode &= ~0x7;
-   clkmode |= 0x4;
-   PUT32(CM_CLKMODE_DPLL_DISP,clkmode);
-   while((GET32(CM_IDLEST_DPLL_DISP) &0x100) != 0x100);
-   
-   clksel &= ~0x7FFFF;
-   clksel |= (m<<8) | n;
-   PUT32(CM_CLKSEL_DPLL_DISP,clksel);
-   div_m2 =  ~0x1F | m2;
-   PUT32(CM_DIV_M2_DPLL_DISP,div_m2);
-   clkmode &= ~0x7;
-   clkmode |= 0x7;
-   PUT32(CM_CLKMODE_DPLL_DISP,clkmode);
-   
-   while((GET32(CM_IDLEST_DPLL_DISP) &0x1) != 0x1);
+    uint32_t ref_clk;
+    uint32_t clkmode, clksel, div_m2;
+
+    ref_clk = clkin / (n + 1);
+    clkmode = (ref_clk * m) / m2;
+
+    clkmode = GET32(CM_CLKMODE_DPLL_DISP);
+    clksel = GET32(CM_CLKSEL_DPLL_DISP);
+    clksel = GET32(CM_DIV_M2_DPLL_DISP);
+
+    clkmode &= ~0x7;
+    clkmode |= 0x4;
+    PUT32(CM_CLKMODE_DPLL_DISP, clkmode);
+    while ((GET32(CM_IDLEST_DPLL_DISP) & 0x100) != 0x100);
+
+    clksel &= ~0x7FFFF;
+    clksel |= (m << 8) | n;
+    PUT32(CM_CLKSEL_DPLL_DISP, clksel);
+    div_m2 =  ~0x1F | m2;
+    PUT32(CM_DIV_M2_DPLL_DISP, div_m2);
+    clkmode &= ~0x7;
+    clkmode |= 0x7;
+    PUT32(CM_CLKMODE_DPLL_DISP, clkmode);
+
+    while ((GET32(CM_IDLEST_DPLL_DISP) & 0x1) != 0x1);
 }

@@ -200,148 +200,143 @@ static const unsigned int UART_ARRAY_BASE[] = {0x44E09000, 0x48022000, 0x4802400
 
 static bool UART_checkValidUart(UART_t uart)
 {
-   if((uart < UART0) || (uart > UART5))
-   {
-      // TODO: raise error (Uart number is either too big or negative: /uart)
-      return false;
-   }
-   return true;
+    if ((uart < UART0) || (uart > UART5)) {
+        // TODO: raise error (Uart number is either too big or negative: /uart)
+        return false;
+    }
+    return true;
 }
 void UART_initUART(UART_t uart, unsigned int baudrate, STOP_BIT_t stopBit, PARITY_BIT_t parity, FLOW_t flowControl)
 {
-   if(UART_checkValidUart(uart))
-   {
-      unsigned int uart_base = UART_ARRAY_BASE[uart];
-      switch(uart)
-      {
-         case UART0: // tx=1.11  rx=1.10  cts=1.8  rts=1.9
-            
+    if (UART_checkValidUart(uart)) {
+        unsigned int uart_base = UART_ARRAY_BASE[uart];
+        switch (uart) {
+        case UART0: // tx=1.11  rx=1.10  cts=1.8  rts=1.9
+
             GPIO_initPort(GPIO1);
-            CM_setCtrlModule(CM_conf_uart0_txd,0); // do nothing on UART0_tx
-            CM_setCtrlModule(CM_conf_uart0_rxd,(1<<4)|(1<<5)); // set pullup/pulldown & receiver enabled on UART0_rx
-            PAD_setMode(CM_conf_uart0_txd,MODE_0); // set p1.11 as UART0_tx
-            PAD_setMode(CM_conf_uart0_rxd,MODE_0); // set p1.10 as UART0_rx
-            
-            unsigned int temp = CKM_getCLKModuleRegister(CKM_WKUP,CKM_WKUP_CLKSTCTRL);
+            CM_setCtrlModule(CM_conf_uart0_txd, 0); // do nothing on UART0_tx
+            CM_setCtrlModule(CM_conf_uart0_rxd, (1 << 4) | (1 << 5)); // set pullup/pulldown & receiver enabled on UART0_rx
+            PAD_setMode(CM_conf_uart0_txd, MODE_0); // set p1.11 as UART0_tx
+            PAD_setMode(CM_conf_uart0_rxd, MODE_0); // set p1.10 as UART0_rx
+
+            unsigned int temp = CKM_getCLKModuleRegister(CKM_WKUP, CKM_WKUP_CLKSTCTRL);
             temp &= ~(0b11);
             temp |= 0b10;      // software-forced wake-up transition on the "always on clock domain", TRM Table 8-92
-            CKM_setCLKModuleRegister(CKM_WKUP,CKM_WKUP_CLKSTCTRL,temp);
-            
-            temp = CKM_getCLKModuleRegister(CKM_PER,CKM_PER_L4HS_CLKSTCTRL);
+            CKM_setCLKModuleRegister(CKM_WKUP, CKM_WKUP_CLKSTCTRL, temp);
+
+            temp = CKM_getCLKModuleRegister(CKM_PER, CKM_PER_L4HS_CLKSTCTRL);
             temp &= ~(0b11);
             temp |= 0b10;      // software-forced wake up transition on the L4 high speed domain
-                   CKM_setCLKModuleRegister(CKM_PER,CKM_PER_L4HS_CLKSTCTRL,temp);
+            CKM_setCLKModuleRegister(CKM_PER, CKM_PER_L4HS_CLKSTCTRL, temp);
 
-            temp = CKM_getCLKModuleRegister(CKM_WKUP,CKM_WKUP_UART0_CLKCTRL);
+            temp = CKM_getCLKModuleRegister(CKM_WKUP, CKM_WKUP_UART0_CLKCTRL);
             temp &= ~(0b11);
             temp |= 0b10;      // Module is explicitly enabled,    TRM Table 8-137
-                   CKM_setCLKModuleRegister(CKM_WKUP,CKM_WKUP_UART0_CLKCTRL,temp);
-            while((CKM_getCLKModuleRegister(CKM_WKUP, CKM_WKUP_UART0_CLKCTRL) & (0b11<<16)) != 0); // wait until clock transition is complete
-            
+            CKM_setCLKModuleRegister(CKM_WKUP, CKM_WKUP_UART0_CLKCTRL, temp);
+            while ((CKM_getCLKModuleRegister(CKM_WKUP, CKM_WKUP_UART0_CLKCTRL) & (0b11 << 16)) != 0); // wait until clock transition is complete
+
             // TODO: verifiy it next block is needed for uart0
             // warning, why would the UART1 registers need modification when configuring UART0?
-            temp = CKM_getCLKModuleRegister(CKM_PER,CKM_PER_UART1_CLKCTRL);
+            temp = CKM_getCLKModuleRegister(CKM_PER, CKM_PER_UART1_CLKCTRL);
             temp &= ~(0b11);
             temp |= 0b10;      // Module is explicitly enabled,    TRM Table 8-137
-                   CKM_setCLKModuleRegister(CKM_PER,CKM_PER_UART1_CLKCTRL,temp);
-            
-            temp = GET32(uart_base+0x54);    // SYSC
+            CKM_setCLKModuleRegister(CKM_PER, CKM_PER_UART1_CLKCTRL, temp);
+
+            temp = GET32(uart_base + 0x54);  // SYSC
             temp |= 0x2;      // uart module reset
-            PUT32(uart_base+0x54,temp);
-            
-            while((GET32(uart_base+0x58)&1)==0);   // wait for reset to be complete
-            
-            temp = GET8(uart_base+0x54);
-            temp |= (0x1<<3); // no idle
-            PUT8(uart_base+0x54,temp);
-            
-            while(((GET32(uart_base+0x14)&0x40)!=0x40));    // wait for txfifo to be empty
-            
-            
-            float div = 48000000.0/(16.0*(float)baudrate);
+            PUT32(uart_base + 0x54, temp);
+
+            while ((GET32(uart_base + 0x58) & 1) == 0); // wait for reset to be complete
+
+            temp = GET8(uart_base + 0x54);
+            temp |= (0x1 << 3); // no idle
+            PUT8(uart_base + 0x54, temp);
+
+            while (((GET32(uart_base + 0x14) & 0x40) != 0x40)); // wait for txfifo to be empty
+
+
+            float div = 48000000.0 / (16.0 * (float)baudrate);
             unsigned int intdiv = (unsigned int) div;
-            PUT8(uart_base+0x04,0);
-            PUT8(uart_base+0x20,0x7);        // Disable modeselect (default) TRM table 19-50
-            PUT8(uart_base+0x0C,~(0x7C));    // divisor latch enable, access DLL DHL, set uart as 8bit
-            PUT8(uart_base+0x00,0);          // DLL = 0
-            PUT8(uart_base+0x04,0);          // DHL = 0
-            PUT8(uart_base+0x0C,0x3);        // set uart as 8bit
-            PUT8(uart_base+0x10,0x3);        // force /rts & /drt to active (low) (?!)
-            PUT8(uart_base+0x08,0x7);        // clear rx&tx FIFOs, and enables them (each 64 bytes deep)
-            PUT8(uart_base+0x0C,~(0x7C));    // divisor latch enable, access DLL DHL, set uart as 8bit
-            PUT8(uart_base+0x00,intdiv&0xFF);          // DLL = 0
-            PUT8(uart_base+0x04,(intdiv>>8)&0x3F);          // DHL = 0
+            PUT8(uart_base + 0x04, 0);
+            PUT8(uart_base + 0x20, 0x7);     // Disable modeselect (default) TRM table 19-50
+            PUT8(uart_base + 0x0C, ~(0x7C)); // divisor latch enable, access DLL DHL, set uart as 8bit
+            PUT8(uart_base + 0x00, 0);       // DLL = 0
+            PUT8(uart_base + 0x04, 0);       // DHL = 0
+            PUT8(uart_base + 0x0C, 0x3);     // set uart as 8bit
+            PUT8(uart_base + 0x10, 0x3);     // force /rts & /drt to active (low) (?!)
+            PUT8(uart_base + 0x08, 0x7);     // clear rx&tx FIFOs, and enables them (each 64 bytes deep)
+            PUT8(uart_base + 0x0C, ~(0x7C)); // divisor latch enable, access DLL DHL, set uart as 8bit
+            PUT8(uart_base + 0x00, intdiv & 0xFF);     // DLL = 0
+            PUT8(uart_base + 0x04, (intdiv >> 8) & 0x3F);   // DHL = 0
 
 //            PUT8(uart_base+0x00,26);         // DLL/DHL value for 115200
-            PUT8(uart_base+0x0C,0x3);        // set uart as 8 bit
-            PUT8(uart_base+0x20,0);          // uart 16x oversampling
-            
+            PUT8(uart_base + 0x0C, 0x3);     // set uart as 8 bit
+            PUT8(uart_base + 0x20, 0);       // uart 16x oversampling
+
             break;
-         // TODO: implement UART1-5
-         case UART1:
+        // TODO: implement UART1-5
+        case UART1:
             break;
-         case UART2:
+        case UART2:
             break;
-         case UART3:
+        case UART3:
             break;
-         case UART4:
+        case UART4:
             break;
-         case UART5:
+        case UART5:
             break;
-      }
-   }
+        }
+    }
 }
 
 void UART_putC(UART_t uart, char c)
 {
-   unsigned int uart_base = UART_ARRAY_BASE[uart];
-   while((GET8(uart_base+0x14)&0x20)!=0x20);   //wait until txfifo is empty
-    
-   PUT8(uart_base +0,c);
+    unsigned int uart_base = UART_ARRAY_BASE[uart];
+    while ((GET8(uart_base + 0x14) & 0x20) != 0x20); //wait until txfifo is empty
+
+    PUT8(uart_base + 0, c);
 }
 
 char UART_getC(UART_t uart)
 {
-   unsigned int uart_base = UART_ARRAY_BASE[uart];
-   while((GET8(uart_base+0x14)&0x1)==0);     //wait for a character to be in the rx fifo
-   return GET8(uart_base+0x0);
+    unsigned int uart_base = UART_ARRAY_BASE[uart];
+    while ((GET8(uart_base + 0x14) & 0x1) == 0); //wait for a character to be in the rx fifo
+    return GET8(uart_base + 0x0);
 }
 
-int UART_putString(UART_t uart,const char *str, unsigned int length)
+int UART_putString(UART_t uart, const char *str, unsigned int length)
 {
-   for(int i = 0; i < length; i++)
-   {
-      UART_putC(uart,str[i]);
-   }
-   return length;
+    for (int i = 0; i < length; i++) {
+        UART_putC(uart, str[i]);
+    }
+    return length;
 }
 
 int UART_getString(UART_t uart, char *buf, unsigned int length)
 {
-   for(int i = 0; i < length; i ++)
-   {
-      buf[i] = UART_getC(uart);
-   }
-   return length;
+    for (int i = 0; i < length; i ++) {
+        buf[i] = UART_getC(uart);
+    }
+    return length;
 }
 
 
 
 /*
  The MIT License (MIT)
- 
+
  Copyright (c) 2015 Alexis Marquet
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
